@@ -6,5 +6,6 @@
     <string name="popularity_query">sort_by=popularity.desc</string>
     <string name="TMDB_URL">https://api.themoviedb.org/3/discover/movie</string>
     <string name="network_is_broken">Sorry, no internet connection found...</string>
+    <string name="general_error">Something went wrong in a big way...</string>
 
 </resources>

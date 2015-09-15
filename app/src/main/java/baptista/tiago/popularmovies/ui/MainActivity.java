@@ -1,15 +1,16 @@
-package baptista.tiago.moviestreamer.ui;
+package baptista.tiago.popularmovies.ui;
 
-import android.app.DownloadManager;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.okhttp.Call;
@@ -22,22 +23,23 @@ import org.json.JSONException;
 
 import java.io.IOException;
 
-import baptista.tiago.moviestreamer.R;
-import baptista.tiago.moviestreamer.models.Api;
-import baptista.tiago.moviestreamer.models.Movies;
+import baptista.tiago.popularmovies.R;
+import baptista.tiago.popularmovies.adapters.AllMoviesAdapter;
+import baptista.tiago.popularmovies.models.AllMovies;
+import baptista.tiago.popularmovies.models.Api;
+import baptista.tiago.popularmovies.utils.ParseUtil;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String TAG = MainActivity.class.getSimpleName();
+    public static final String TAG = MainActivity.class.getName();
     private boolean mNetworkAvailable;
-    private Movies mMovies;
+    private AllMovies mAllMovies;
 
-    @Bind(R.id.progressBar)
-    ProgressBar mProgressBar;
-    @Bind(R.id.loadingTextView)
-    TextView mLoadingTextView;
+    @Bind(R.id.progressBar) ProgressBar mProgressBar;
+    @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
+    //@Bind(R.id.loadingTextView)TextView mLoadingTextView;
 
 
     @Override
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         api.setQuery(getString(R.string.popularity_query));
         api.setURL(getString(R.string.TMDB_URL));
 
-        getMovies();
+        getMovies(); // Need to offload this to another class to tidy up main activity
     }
 
     private void getMovies() {
@@ -93,29 +95,28 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         String jsonData = response.body().string();
                         if (response.isSuccessful()) {
-                            //mMovies = parseMovies(jsonData);
+                            mAllMovies = ParseUtil.parseMovies(jsonData);
 
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    //updateDisplay();
-                                    Toast.makeText(MainActivity.this, "Got my data so will update", Toast.LENGTH_SHORT).show();
+                                    updateDisplay();
                                 }
                             });
                         } else {
-                            Toast.makeText(MainActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                            popError();
                         }
                     } catch (IOException e) {
                         Log.e(TAG, "Exception caught: ", e);
-                    } //catch (JSONException e) {
-                     //   Log.e(TAG, "Exception caught: ", e);
-                    //}
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Exception caught: ", e);
+                    }
                 }
             });
             Log.d(TAG, "Main UI code is running!!!");
         }
         else {
-            Toast.makeText(MainActivity.this, getString(R.string.network_is_broken), Toast.LENGTH_SHORT).show();
+            popNetworkError();
         }
     }
 
@@ -142,7 +143,23 @@ public class MainActivity extends AppCompatActivity {
     private void popError() {
         //AlertDialogFragment dialog = new AlertDialogFragment();
         //dialog.show(getFragmentManager(), "error_dialog");
+        Toast.makeText(this, getString(R.string.general_error), Toast.LENGTH_SHORT).show();
+    }
+
+    private void popNetworkError() {
+        //AlertDialogFragment dialog = new AlertDialogFragment();
+        //dialog.show(getFragmentManager(), "error_dialog");
         Toast.makeText(this, getString(R.string.network_is_broken), Toast.LENGTH_SHORT).show();
+    }
+
+    private void updateDisplay() {
+        AllMoviesAdapter adapter = new AllMoviesAdapter(this, mAllMovies.getMovies());
+        mRecyclerView.setAdapter(adapter);
+
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(layoutManager);
+
+        mRecyclerView.setHasFixedSize(true);
     }
 }
 

@@ -1,4 +1,4 @@
-package baptista.tiago.moviestreamer.models;
+package baptista.tiago.popularmovies.models;
 
 /**
  * Created by Tiggi on 9/14/2015.

@@ -1,9 +1,9 @@
-package baptista.tiago.moviestreamer.models;
+package baptista.tiago.popularmovies.models;
 
 /**
  * Created by Tiggi on 9/14/2015.
  */
-public class Movies {
+public class Movie {
 
     private String mOriginalTitle;
     private String mPoster;
@@ -51,6 +51,6 @@ public class Movies {
         mReleaseDate = releaseDate;
     }
 
-    public Movies() {
+    public Movie() {
     }
 }

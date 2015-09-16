@@ -34,6 +34,7 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = MainActivity.class.getName();
+    private static final String MAIN_FRAGMENT_TAG = "MAIN_FRAGMENT_TAG";
     private AllMovies mAllMovies;
     private String mAPIKey;
     private String mQuery;
@@ -47,6 +48,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        // Fragment stuff
+        //android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        //ft.replace(R.id.fragment_placeholder, new MainActivityFragment(), MAIN_FRAGMENT_TAG);
+        //ft.commit();
+
+
 
         // Start progress bar to show user that something is happening
         mProgressBar.setVisibility(View.VISIBLE);
@@ -105,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     updateDisplay();
+                                    toggleRefresh();
                                 }
                             });
                         } else {
@@ -158,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
         AllMoviesAdapter adapter = new AllMoviesAdapter(this, mAllMovies.getMovies());
         mRecyclerView.setAdapter(adapter);
 
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 2);
         mRecyclerView.setLayoutManager(layoutManager);
 
         mRecyclerView.setHasFixedSize(true);

@@ -41,7 +41,6 @@ public class ParseUtil {
 
             movies[i] = movie;
         }
-
         return movies;
     }
 }

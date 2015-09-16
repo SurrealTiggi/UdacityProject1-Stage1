@@ -26,44 +26,48 @@ import java.io.IOException;
 import baptista.tiago.popularmovies.R;
 import baptista.tiago.popularmovies.adapters.AllMoviesAdapter;
 import baptista.tiago.popularmovies.models.AllMovies;
-import baptista.tiago.popularmovies.models.Api;
 import baptista.tiago.popularmovies.utils.ParseUtil;
+import baptista.tiago.popularmovies.utils.URLUtil;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = MainActivity.class.getName();
-    private boolean mNetworkAvailable;
     private AllMovies mAllMovies;
+    private String mAPIKey;
+    private String mQuery;
+    private String mURL;
 
     @Bind(R.id.progressBar) ProgressBar mProgressBar;
     @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
-    //@Bind(R.id.loadingTextView)TextView mLoadingTextView;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        // Start progress bar to show user that something is happening
         mProgressBar.setVisibility(View.VISIBLE);
 
-        Api api = new Api();
-        api.setAPIKey(getString(R.string.API_KEY));
-        api.setQuery(getString(R.string.popularity_query));
-        api.setURL(getString(R.string.TMDB_URL));
-
-        getMovies(); // Need to offload this to another class to tidy up main activity
+        // Check if network is available before doing anything
+        if (isNetworkAvailable()) {
+            // fetch API key
+            mAPIKey = getString(R.string.API_KEY);
+            // build URL, default=popular if first load
+            mQuery = getString(R.string.popularity_query);
+            mURL = URLUtil.buildSearchURL(mQuery, mAPIKey);
+            // build movie data model
+            getMovies(mURL); // Need to offload this to another class to tidy up main activity
+            toggleRefresh();
+        } else {
+            popNetworkError();
+        }
     }
 
-    private void getMovies() {
-        String tmdbURL; // use URI builder here
-
-        if (isNetworkAvailable()) {
-            toggleRefresh();
-
-            tmdbURL = "https://api.themoviedb.org/3/discover/movie?api_key=4ad55f8322cc144be9c7665c5d3bff06&sort_by=popularity.desc";
+    private void getMovies(String url) {
+        String tmdbURL = url;
 
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
@@ -114,10 +118,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
             Log.d(TAG, "Main UI code is running!!!");
-        }
-        else {
-            popNetworkError();
-        }
     }
 
     private void toggleRefresh() {
@@ -144,12 +144,14 @@ public class MainActivity extends AppCompatActivity {
         //AlertDialogFragment dialog = new AlertDialogFragment();
         //dialog.show(getFragmentManager(), "error_dialog");
         Toast.makeText(this, getString(R.string.general_error), Toast.LENGTH_SHORT).show();
+        toggleRefresh();
     }
 
     private void popNetworkError() {
         //AlertDialogFragment dialog = new AlertDialogFragment();
         //dialog.show(getFragmentManager(), "error_dialog");
         Toast.makeText(this, getString(R.string.network_is_broken), Toast.LENGTH_SHORT).show();
+        toggleRefresh();
     }
 
     private void updateDisplay() {

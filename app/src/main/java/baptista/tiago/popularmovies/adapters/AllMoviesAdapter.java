@@ -10,8 +10,11 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
+
 import baptista.tiago.popularmovies.R;
 import baptista.tiago.popularmovies.models.Movie;
+import baptista.tiago.popularmovies.utils.URLUtil;
 
 /**
  * Created by Tiggi on 9/15/2015.
@@ -45,7 +48,6 @@ public class AllMoviesAdapter extends RecyclerView.Adapter<AllMoviesAdapter.Movi
         return mMovies.length;
     }
 
-
     public class MovieViewHolder extends RecyclerView.ViewHolder
         implements View.OnClickListener {
 
@@ -54,16 +56,14 @@ public class AllMoviesAdapter extends RecyclerView.Adapter<AllMoviesAdapter.Movi
 
         public MovieViewHolder(View itemView) {
             super(itemView);
-            // do Picasso stuff here
-            // http://image.tmdb.org/t/p/w185/kqjL17yufvn9OVLyXYpvtyrFfak.jpg
-
             mPosterImageView = (ImageView) itemView.findViewById(R.id.posterImageView);
             itemView.setOnClickListener(this);
         }
 
         public void bindMovie(Movie movie) {
             currentMovie = movie;
-            mPosterImageView.setImageResource(R.drawable.test_poster);
+            String url = URLUtil.buildPosterURL(movie.getPoster());
+            Picasso.with(mContext).load(url).into(mPosterImageView);
         }
 
         @Override
@@ -71,6 +71,7 @@ public class AllMoviesAdapter extends RecyclerView.Adapter<AllMoviesAdapter.Movi
             String title = currentMovie.getOriginalTitle();
             Log.d(TAG, "bindMovie(): " + title);
             Toast.makeText(mContext, "You clicked on " + title, Toast.LENGTH_SHORT).show();
+            // Start new activity with single movie object as parselable arg
         }
     }
 }

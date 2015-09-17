@@ -7,5 +7,9 @@
     <string name="highest_rated_query">vote_average.desc</string>
     <string name="network_is_broken">Sorry, no internet connection found...</string>
     <string name="general_error">Something went wrong in a big way...</string>
+    <string name="rating_sort">Highest Rated</string>
+    <string name="popularity_sort">Most Popular</string>
+    <string name="title_activity_movie_detail">MovieDetailActivity</string>
+    <string name="hello_world">Hello world!</string>
 
 </resources>

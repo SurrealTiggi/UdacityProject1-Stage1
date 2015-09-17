@@ -47,6 +47,16 @@ public class Movie {
         return mReleaseDate;
     }
 
+    public String[] getMovieArray() {
+        String[] movieDetails = new String[5];
+        movieDetails[0] = this.getOriginalTitle();
+        movieDetails[1] = this.getSynopsis();
+        movieDetails[2] = this.getPoster();
+        movieDetails[3] = this.getReleaseDate();
+        movieDetails[4] = this.getRating().toString();
+        return movieDetails;
+    }
+
     public void setReleaseDate(String releaseDate) {
         mReleaseDate = releaseDate;
     }

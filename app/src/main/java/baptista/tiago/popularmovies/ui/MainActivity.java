@@ -6,9 +6,10 @@ import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -49,37 +50,52 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        // Start progress bar to show user that something is happening
+        mProgressBar.setVisibility(View.VISIBLE);
+
         // Fragment stuff
         //android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         //ft.replace(R.id.fragment_placeholder, new MainActivityFragment(), MAIN_FRAGMENT_TAG);
         //ft.commit();
 
-
-
-        // Start progress bar to show user that something is happening
-        mProgressBar.setVisibility(View.VISIBLE);
-
         // Check if network is available before doing anything
         if (isNetworkAvailable()) {
-            // fetch API key
-            mAPIKey = getString(R.string.API_KEY);
-            // build URL, default=popular if first load
-            mQuery = getString(R.string.popularity_query);
-            mURL = URLUtil.buildSearchURL(mQuery, mAPIKey);
-            // build movie data model
-            getMovies(mURL); // Need to offload this to another class to tidy up main activity
+            getMovies(); // Need to offload this to another class to tidy up main activity
             toggleRefresh();
         } else {
             popNetworkError();
         }
     }
 
-    private void getMovies(String url) {
-        String tmdbURL = url;
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.sort_popularity_option) {
+            Toast.makeText(this, "Will sort by popularity", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (id == R.id.sort_rating_option) {
+            Toast.makeText(this, "Will sort by rating", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void getMovies() {
+        // fetch API key
+        mAPIKey = getString(R.string.API_KEY);
+        // build URL, default=popular if first load
+        mQuery = getString(R.string.popularity_query);
+        mURL = URLUtil.buildSearchURL(mQuery, mAPIKey);
 
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
-                    .url(tmdbURL)
+                    .url(mURL)
                     .build();
 
             Call call = client.newCall(request);
@@ -164,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateDisplay() {
-        AllMoviesAdapter adapter = new AllMoviesAdapter(this, mAllMovies.getMovies());
+        AllMoviesAdapter adapter = new AllMoviesAdapter(MainActivity.this, mAllMovies.getMovies());
         mRecyclerView.setAdapter(adapter);
 
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 2);

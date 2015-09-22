@@ -2,14 +2,14 @@
     <string name="app_name">Popular Movies</string>
 
     <string name="action_settings">Settings</string>
-    <string name="API_KEY">4ad55f8322cc144be9c7665c5d3bff06</string>
     <string name="popularity_query">popularity.desc</string>
     <string name="highest_rated_query">vote_average.desc</string>
     <string name="network_is_broken">Sorry, no internet connection found...</string>
     <string name="general_error">Something went wrong in a big way...</string>
-    <string name="rating_sort">Highest Rated</string>
-    <string name="popularity_sort">Most Popular</string>
     <string name="title_activity_movie_detail">MovieDetailActivity</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="settings_sort_order_title">Sort Movies By</string>
+    <string name="settings_sort_order_key">sortOrder</string>
+    <string name="settings_sort_order_popular">Most Popular</string>
+    <string name="settings_sort_order_ratings">Highest Rated</string>
 
 </resources>

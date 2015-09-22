@@ -12,9 +12,6 @@ import android.widget.Toast;
 
 import baptista.tiago.popularmovies.R;
 
-/**
- * Created by Tiggi on 9/16/2015.
- */
 public class MainActivityFragment extends android.support.v4.app.Fragment{
 
     public static final String TAG = MainActivityFragment.class.getName();
@@ -24,7 +21,6 @@ public class MainActivityFragment extends android.support.v4.app.Fragment{
         Log.d(TAG, "MainActivityFragment()");
         mContext = getActivity();
         Log.d(TAG, mContext + "");
-        //Toast.makeText(getActivity(), "Whaaa...", Toast.LENGTH_LONG).show();
     }
 
     @Override

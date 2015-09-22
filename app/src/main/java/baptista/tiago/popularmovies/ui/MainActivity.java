@@ -148,10 +148,8 @@ public class MainActivity extends AppCompatActivity {
     private void toggleRefresh() {
         if (mProgressBar.getVisibility() == View.INVISIBLE) {
             mProgressBar.setVisibility(View.VISIBLE);
-            //mRefreshImageView.setVisibility(View.INVISIBLE);
         } else {
             mProgressBar.setVisibility(View.INVISIBLE);
-            //mRefreshImageView.setVisibility(View.VISIBLE);
         }
     }
 

@@ -5,12 +5,12 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Callback;
@@ -28,7 +28,7 @@ import baptista.tiago.popularmovies.models.AllMovies;
 import baptista.tiago.popularmovies.utils.ParseUtil;
 import baptista.tiago.popularmovies.utils.URLUtil;
 
-public class MainActivityFragment extends android.support.v4.app.Fragment{
+public class MainActivityFragment extends Fragment {
 
     public static final String TAG = MainActivityFragment.class.getName();
     private Context mContext;
@@ -58,9 +58,16 @@ public class MainActivityFragment extends android.support.v4.app.Fragment{
                              Bundle savedInstanceState) {
         if (mView != null) {
             ((ViewGroup) mView.getParent()).removeView(mView);
+            updateDisplay();
             return mView;
         } else {
             this.mView = inflater.inflate(R.layout.fragment_main, container, false);
+
+            // fetch API key
+            mAPIKey = getString(R.string.API_KEY);
+            // build URL, default=popular if first load
+            mQuery = getString(R.string.popularity_query);
+            mURL = URLUtil.buildSearchURL(mQuery, mAPIKey);
             this.getMovies();
             return mView;
         }
@@ -68,12 +75,6 @@ public class MainActivityFragment extends android.support.v4.app.Fragment{
 
     private void getMovies() {
         Log.d(TAG, "getMovies()");
-        // fetch API key
-        mAPIKey = getString(R.string.API_KEY);
-        // build URL, default=popular if first load
-        mQuery = getString(R.string.popularity_query);
-        mURL = URLUtil.buildSearchURL(mQuery, mAPIKey);
-        mRecyclerView = (RecyclerView) mView.findViewById(R.id.recyclerView);
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
@@ -114,13 +115,25 @@ public class MainActivityFragment extends android.support.v4.app.Fragment{
     }
 
     private void updateDisplay() {
+
+        mRecyclerView = (RecyclerView) mView.findViewById(R.id.recyclerView);
+
         AllMoviesAdapter adapter = new AllMoviesAdapter(mContext, mAllMovies.getMovies());
         mRecyclerView.setAdapter(adapter);
 
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(mContext, 2);
+        // should be getting recycleview width, not screen width
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        display.getMetrics(outMetrics);
+
+        float density  = getResources().getDisplayMetrics().density;
+        float dpWidth  = outMetrics.widthPixels / density;
+        // replace 300 with xml layout
+        int columns = Math.round(dpWidth/300);
+
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(mContext, columns + 1);
         mRecyclerView.setLayoutManager(layoutManager);
 
         mRecyclerView.setHasFixedSize(true);
     }
-
 }

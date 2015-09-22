@@ -5,10 +5,9 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.preference.PreferenceFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,21 +15,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.squareup.okhttp.Call;
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-
-import org.json.JSONException;
-
-import java.io.IOException;
-
 import baptista.tiago.popularmovies.R;
-import baptista.tiago.popularmovies.adapters.AllMoviesAdapter;
-import baptista.tiago.popularmovies.models.AllMovies;
-import baptista.tiago.popularmovies.utils.ParseUtil;
-import baptista.tiago.popularmovies.utils.URLUtil;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -118,6 +103,15 @@ public class MainActivity extends AppCompatActivity {
         //dialog.show(getFragmentManager(), "error_dialog");
         Toast.makeText(this, getString(R.string.network_is_broken), Toast.LENGTH_SHORT).show();
         toggleRefresh();
+    }
+
+    public static class SettingsFragment extends PreferenceFragment {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            addPreferencesFromResource(R.xml.settings);
+        }
     }
 }
 

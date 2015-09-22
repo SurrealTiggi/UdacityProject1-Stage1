@@ -19,7 +19,7 @@ import baptista.tiago.popularmovies.utils.URLUtil;
 
 public class MovieDetailActivityFragment extends Fragment {
 
-    private static final String TAG = MainActivityFragment.class.getName();
+    private static final String TAG = MovieDetailActivityFragment.class.getName();
     private Activity mActivity;
     private View mView;
     private Intent mIntent;
@@ -37,11 +37,17 @@ public class MovieDetailActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView()");
+        if (mView != null) {
+            ((ViewGroup) mView.getParent()).removeView(mView);
+            return mView;
+        } else {
+            this.mView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
+            updateDisplay();
+            return mView;
+        }
+    }
 
-        // Declaring variables only visible inside this view
-        this.mView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
-        this.mActivity = getActivity();
-        this.mIntent = mActivity.getIntent();
+    private void updateDisplay() {
         // Container views
         this.mTitleView = (TextView) mView.findViewById(R.id.detailOriginalTitle);
         this.mSynopsisView = (TextView) mView.findViewById(R.id.detailSynopsis);
@@ -53,6 +59,7 @@ public class MovieDetailActivityFragment extends Fragment {
         String[] currentMovieDetails = mIntent.getStringArrayExtra("CURRENT_MOVIE");
 
         // Populate the dirtiest detail view
+        Log.d(TAG, "Doing a bunch of stuff");
         mTitleView.setText(currentMovieDetails[0]);
         mSynopsisView.setText(currentMovieDetails[1]);
         Picasso.with(getActivity())
@@ -62,16 +69,15 @@ public class MovieDetailActivityFragment extends Fragment {
                 .into(mPosterView);
         mReleaseDateView.setText(currentMovieDetails[3]);
         mRatingView.setText(currentMovieDetails[4]);
-
-        setRetainInstance(true);
-
-        return mView;
     }
 
     @Override
     public void onCreate(Bundle state) {
         super.onCreate(state);
         Log.d(TAG, "onCreate()");
+        this.mActivity = getActivity();
+        this.mIntent = mActivity.getIntent();
         setHasOptionsMenu(true);
+        setRetainInstance(true);
     }
 }

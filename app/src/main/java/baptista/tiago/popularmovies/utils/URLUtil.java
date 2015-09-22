@@ -23,7 +23,7 @@ public class URLUtil {
                 .appendQueryParameter("sort_by", searchOrder);
 
         String URL = builder.build().toString();
-        Log.d(TAG, "Movie URL[" + URL + ")");
+        //Log.d(TAG, "Movie URL[" + URL + ")");
         return(URL);
     }
 
@@ -38,7 +38,7 @@ public class URLUtil {
                 .appendPath(image.startsWith("/") ? image.substring(1) : image);
 
         String URL = builder.build().toString();
-        Log.d(TAG, "Poster URL[" + URL + ")");
+        //Log.d(TAG, "Poster URL[" + URL + ")");
         return( URL );
     }
 }

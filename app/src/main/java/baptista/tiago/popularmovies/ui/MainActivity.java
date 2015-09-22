@@ -1,5 +1,7 @@
 package baptista.tiago.popularmovies.ui;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -35,14 +37,9 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = MainActivity.class.getName();
-    private static final String MAIN_FRAGMENT_TAG = "MAIN_FRAGMENT_TAG";
-    private AllMovies mAllMovies;
-    private String mAPIKey;
-    private String mQuery;
-    private String mURL;
+    private Fragment fragmentData;
 
     @Bind(R.id.progressBar) ProgressBar mProgressBar;
-    @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,15 +50,20 @@ public class MainActivity extends AppCompatActivity {
         // Start progress bar to show user that something is happening
         mProgressBar.setVisibility(View.VISIBLE);
 
-        // Fragment stuff
-        //android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        //ft.replace(R.id.fragment_placeholder, new MainActivityFragment(), MAIN_FRAGMENT_TAG);
-        //ft.commit();
-
         // Check if network is available before doing anything
         if (isNetworkAvailable()) {
-            getMovies(); // Need to offload this to another class to tidy up main activity
-            toggleRefresh();
+            // do fragment
+            Log.d(TAG, "onCreate(): Initializing fragment manager...");
+            FragmentManager fm = getFragmentManager();
+            fragmentData = fm.findFragmentByTag("mContext");
+
+            if (fragmentData == null) {
+                Log.d(TAG, "onCreate(): Creating fragment for the first time");
+                fragmentData = new Fragment();
+                fm.beginTransaction().add(fragmentData, "mContext").commit();
+            } else {
+                Log.d(TAG, "onCreate(): Found existing fragment " + fragmentData);
+            }
         } else {
             popNetworkError();
         }
@@ -84,65 +86,6 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void getMovies() {
-        // fetch API key
-        mAPIKey = getString(R.string.API_KEY);
-        // build URL, default=popular if first load
-        mQuery = getString(R.string.popularity_query);
-        mURL = URLUtil.buildSearchURL(mQuery, mAPIKey);
-
-            OkHttpClient client = new OkHttpClient();
-            Request request = new Request.Builder()
-                    .url(mURL)
-                    .build();
-
-            Call call = client.newCall(request);
-
-            call.enqueue(new Callback() {
-                @Override
-                public void onFailure(Request request, IOException e) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            toggleRefresh();
-                        }
-                    });
-                    popError();
-                }
-
-                @Override
-                public void onResponse(Response response) throws IOException {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            toggleRefresh();
-                        }
-                    });
-                    try {
-                        String jsonData = response.body().string();
-                        if (response.isSuccessful()) {
-                            mAllMovies = ParseUtil.parseMovies(jsonData);
-
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    updateDisplay();
-                                    toggleRefresh();
-                                }
-                            });
-                        } else {
-                            popError();
-                        }
-                    } catch (IOException e) {
-                        Log.e(TAG, "Exception caught: ", e);
-                    } catch (JSONException e) {
-                        Log.e(TAG, "Exception caught: ", e);
-                    }
-                }
-            });
-            Log.d(TAG, "Main UI code is running!!!");
     }
 
     private void toggleRefresh() {
@@ -175,16 +118,6 @@ public class MainActivity extends AppCompatActivity {
         //dialog.show(getFragmentManager(), "error_dialog");
         Toast.makeText(this, getString(R.string.network_is_broken), Toast.LENGTH_SHORT).show();
         toggleRefresh();
-    }
-
-    private void updateDisplay() {
-        AllMoviesAdapter adapter = new AllMoviesAdapter(MainActivity.this, mAllMovies.getMovies());
-        mRecyclerView.setAdapter(adapter);
-
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 2);
-        mRecyclerView.setLayoutManager(layoutManager);
-
-        mRecyclerView.setHasFixedSize(true);
     }
 }
 

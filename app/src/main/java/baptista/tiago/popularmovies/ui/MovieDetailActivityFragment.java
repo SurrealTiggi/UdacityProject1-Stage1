@@ -62,10 +62,14 @@ public class MovieDetailActivityFragment extends Fragment {
         Log.d(TAG, "Doing a bunch of stuff");
         mTitleView.setText(currentMovieDetails[0]);
         mSynopsisView.setText(currentMovieDetails[1]);
+
+        // change to get from local cache
         Picasso.with(getActivity())
                 .load(
                         URLUtil.buildPosterURL(currentMovieDetails[2])
                 )
+                .placeholder(R.drawable.placeholder_poster)
+                .error(R.drawable.error_poster)
                 .into(mPosterView);
         mReleaseDateView.setText(currentMovieDetails[3]);
         mRatingView.setText(currentMovieDetails[4]);

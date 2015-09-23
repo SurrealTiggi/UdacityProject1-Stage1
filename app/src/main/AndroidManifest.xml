@@ -23,6 +23,14 @@
             android:name=".ui.MovieDetailActivity"
             android:label="@string/title_activity_movie_detail" >
         </activity>
+        <activity
+            android:name=".settings.SettingsActivity"
+            android:label="@string/settings_title_general"
+            android:parentActivityName="ui.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="baptista.tiago.popularmovies.ui.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

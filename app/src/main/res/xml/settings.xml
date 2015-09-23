@@ -1,4 +1,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceCategory>
+    android:title="@string/preference_title_general"
 
     <ListPreference
         android:title="@string/settings_sort_order_title"
@@ -6,5 +8,13 @@
         android:defaultValue="1"
         android:entries="@array/sortOrder"
         android:entryValues="@array/sortOrderValues" />
+    <ListPreference
+        android:title="@string/settings_misc_options_title"
+        android:key = "@string/settings_misc_key"
+        android:defaultValue="1"
+        android:entries="@array/miscSettings"
+        android:entryValues="@array/miscSettingsValues"/>
+
+</PreferenceCategory>
 
 </PreferenceScreen>

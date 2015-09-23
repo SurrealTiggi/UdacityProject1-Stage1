@@ -65,7 +65,10 @@ public class AllMoviesAdapter extends RecyclerView.Adapter<AllMoviesAdapter.Movi
         public void bindMovie(Movie movie) {
             currentMovie = movie;
             String url = URLUtil.buildPosterURL(movie.getPoster());
-            Picasso.with(mContext).load(url).into(mPosterImageView);
+            Picasso.with(mContext).load(url)
+                    .placeholder(R.drawable.placeholder_poster)
+                    .error(R.drawable.error_poster)
+                    .into(mPosterImageView);
         }
 
         @Override

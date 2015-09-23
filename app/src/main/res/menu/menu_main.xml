@@ -2,12 +2,8 @@
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
       tools:context=".MainActivity">
-    <item android:id="@+id/sort_popularity_option"
-          android:title="@string/settings_sort_order_popular"
+    <item android:id="@+id/general_settings"
+          android:title="@string/general_settings"
           android:orderInCategory="100"
           app:showAsAction="never"/>
-      <item android:id="@+id/sort_rating_option"
-            android:title="@string/settings_sort_order_ratings"
-            android:orderInCategory="100"
-            app:showAsAction="never"/>
 </menu>

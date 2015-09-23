@@ -4,10 +4,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="230dp"
         android:id="@+id/posterImageView"
         tools:src="@drawable/test_poster"
         android:padding="1dp"

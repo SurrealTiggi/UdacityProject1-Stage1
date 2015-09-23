@@ -6,7 +6,7 @@ This repo contains Stage 1 of the Udacity Android Developer Nanodegree.
 
 *In order for the API calls to work to TMDB, you'll have to create an <b>api.xml</b> file inside <b>app/src/main/res/values/</b> containing your own api key as follows:*
 
-```
+```xml
 <resources>
     <string name="API_KEY">YOUR KEY HERE</string>
 </resources>

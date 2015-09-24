@@ -16,4 +16,12 @@
         <item>vote_count.gte</item>
         <item>year.gte</item>
     </string-array>
+    <string-array name="yearArray">
+        <item>2010</item>
+        <item>2015</item>
+    </string-array>
+    <string-array name="yearValues">
+        <item>2010</item>
+        <item>2015</item>
+    </string-array>
 </resources>

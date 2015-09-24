@@ -4,7 +4,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 tools:context="baptista.tiago.popularmovies.ui.MovieDetailActivityFragment"
-    android:background="@android:color/black">
+                android:background="@android:color/black">
 
     <TextView
         android:layout_width="match_parent"
@@ -12,16 +12,18 @@
         tools:text="Mad Max: Fury Road"
         android:id="@+id/detailOriginalTitle"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="false"
+        android:layout_alignParentStart="true"
         android:textSize="40sp"
         android:textColor="#50ffffff"
-        android:textStyle="bold|italic" />
+        android:textStyle="bold|italic"
+        />
 
     <ScrollView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/scrollView"
-        android:layout_below="@+id/detailOriginalTitle">
+        android:layout_below="@+id/detailOriginalTitle"
+        android:layout_alignParentStart="true">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -29,29 +31,32 @@
 
             <LinearLayout
                 android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
 
                 <LinearLayout
                     android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
                     android:layout_alignParentBottom="true"
                     android:id="@+id/linearLayout">
 
                     <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="150dp"
+                        android:layout_height="220dp"
+                        android:adjustViewBounds="true"
                         android:id="@+id/detailPosterImageView"
                         tools:src="@drawable/test_poster"
                         android:layout_gravity="center"
                         android:layout_marginRight="5dp"
-                        android:scaleType="fitXY" />
+                        android:scaleType="fitXY"
+                        />
 
                     <LinearLayout
                         android:orientation="vertical"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -67,7 +72,7 @@
                             tools:text="2015-01-01"
                             android:id="@+id/detailReleaseDate"
                             android:textColor="@android:color/white"
-                            android:textSize="30sp"
+                            android:textSize="25sp"
                             android:textStyle="bold"
                             android:layout_marginTop="5dp"
                             android:layout_marginBottom="5dp" />
@@ -89,6 +94,14 @@
                             android:layout_marginTop="5dp"
                             android:textSize="20sp"
                             android:layout_marginBottom="5dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Runtime"
+                            android:id="@+id/runtimeTextView"
+                            android:textSize="15sp"
+                            android:textColor="#50ffffff"/>
                     </LinearLayout>
 
                 </LinearLayout>
@@ -104,7 +117,9 @@
                     android:background="#50d8d8d8"
                     android:textStyle="bold"
                     android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp" />
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginLeft="1dp"
+                    android:layout_marginRight="1dp"/>
 
                 <TextView
                     tools:text="Shit gets a'sploded and weird dudes rock out on the sand.

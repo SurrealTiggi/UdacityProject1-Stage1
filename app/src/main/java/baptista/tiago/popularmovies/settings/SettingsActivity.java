@@ -21,7 +21,7 @@ public class SettingsActivity extends PreferenceActivity
 
         addPreferencesFromResource(R.xml.settings);
         bindPreferenceSummaryToValue(findPreference(getString(R.string.settings_sort_order_key)));
-        bindPreferenceSummaryToValue(findPreference(getString(R.string.settings_misc_key)));
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.settings_min_votes_key)));
 
     }
 

@@ -5,11 +5,13 @@
                 android:layout_height="match_parent">
 
     <ImageView
-        android:layout_width="match_parent"
+        android:layout_width="150dp"
         android:layout_height="230dp"
         android:id="@+id/posterImageView"
         tools:src="@drawable/test_poster"
         android:padding="1dp"
-        android:scaleType="fitXY"/>
+        android:scaleType="fitXY"
+        android:adjustViewBounds="true"
+        android:layout_margin="10dp"/>
 
 </FrameLayout>

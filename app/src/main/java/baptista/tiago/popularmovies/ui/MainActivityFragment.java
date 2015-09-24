@@ -2,7 +2,9 @@ package baptista.tiago.popularmovies.ui;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -58,26 +60,48 @@ public class MainActivityFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "----------------------------------------------");
+        Log.d(TAG, "onResume(): " + mQuery);
+
+        if (mQuery != null) {
+            if (mQuery != getSortOrder()) {
+                this.initiateAPICall(1);
+            }
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView()");
+
         if (mView != null) {
             ((ViewGroup) mView.getParent()).removeView(mView);
             updateDisplay();
             return mView;
         } else {
             this.mView = inflater.inflate(R.layout.fragment_main, container, false);
-
-            if (mAllMovies == null) {
-                // fetch API key and build URL with first page and saved query
-                mPage = 1;
-                mAPIKey = getString(R.string.API_KEY);
-                mQuery = getString(R.string.popularity_query);
-                mURL = URLUtil.buildSearchURL(mQuery, mAPIKey, mPage);
-                this.getMovies();
-            } else {
-                Log.d(TAG, "Growing movie model...");
-            }
+            this.initiateAPICall(0);
             return mView;
+        }
+    }
+
+    // Quick workaround, will fix when implementing infinite scroll
+    //[0] = Running for the first time
+    //[1] = Running from onResume()
+    private void initiateAPICall(int i) {
+        Log.d(TAG, "initiateAPICall(): " + "[" + i + "]");
+        if (mAllMovies == null || i == 1) {
+            // fetch API key and build URL with first page and saved query
+            mPage = 1;
+            mAPIKey = getString(R.string.API_KEY);
+            mQuery = getSortOrder();
+            mURL = URLUtil.buildSearchURL(mQuery, mAPIKey, mPage);
+            this.getMovies();
+        } else {
+            Log.d(TAG, "Growing movie model...");
         }
     }
 
@@ -146,6 +170,13 @@ public class MainActivityFragment extends Fragment {
         // replace 300 with xml layout
         mColumns = Math.round(dpWidth / 300);
         return mColumns;
+    }
+
+    private String getSortOrder() {
+        SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(mContext);
+        String sortOrder = (shared.getString(getString(R.string.settings_sort_order_key), ""));
+        Log.d(TAG, "Pref Sort Order[" + sortOrder + "]");
+        return sortOrder;
     }
 
 }

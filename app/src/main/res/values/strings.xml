@@ -2,19 +2,23 @@
     <string name="app_name">Popular Movies</string>
 
     <string name="general_settings">Settings</string>
-    <string name="popularity_query">popularity.desc</string>
-    <string name="highest_rated_query">vote_average.desc</string>
     <string name="network_is_broken">Sorry, no internet connection found...</string>
     <string name="general_error">Something went wrong in a big way...</string>
     <string name="title_activity_movie_detail">Movie Details</string>
-    <string name="settings_sort_order_title">Sort Movies By</string>
+    <string name="settings_sort_order_title">Order</string>
     <string name="settings_sort_order_key">sortOrder</string>
     <string name="settings_sort_order_popular">Most Popular</string>
     <string name="settings_sort_order_ratings">Highest Rated</string>
     <string name="settings_title_general">General Settings</string>
-    <string name="settings_misc_options_title">Misc</string>
-    <string name="settings_misc_key">miscSettings</string>
+    <string name="settings_min_votes_title">Votes</string>
+    <string name="settings_min_votes_key">minVotesKey</string>
     <string name="settings_misc_min_votes">Minimum Votes</string>
     <string name="settings_misc_min_period">Minimum year</string>
+    <string name="settings_min_votes_summary">Minimum votes each movie must have.</string>
+    <string name="settings_sort_summary">Edit the order to sort movies in.</string>
+    <string name="settings_title_sorting">Sorting Settings</string>
+    <string name="settings_min_year_title">Year</string>
+    <string name="settings_min_year_key">minYearKey</string>
+    <string name="settings_min_year_summary">Which year to look for.</string>
 
 </resources>

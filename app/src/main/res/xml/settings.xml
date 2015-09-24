@@ -1,19 +1,23 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-<PreferenceCategory>
-    android:title="@string/preference_title_general"
+<PreferenceCategory
+    android:title="@string/settings_title_sorting">
 
     <ListPreference
         android:title="@string/settings_sort_order_title"
         android:key="@string/settings_sort_order_key"
-        android:defaultValue="1"
+        android:summary="@string/settings_sort_summary"
         android:entries="@array/sortOrder"
         android:entryValues="@array/sortOrderValues" />
-    <ListPreference
-        android:title="@string/settings_misc_options_title"
-        android:key = "@string/settings_misc_key"
-        android:defaultValue="1"
-        android:entries="@array/miscSettings"
-        android:entryValues="@array/miscSettingsValues"/>
+    <EditTextPreference
+        android:title="@string/settings_min_votes_title"
+        android:key = "@string/settings_min_votes_key"
+        android:summary="@string/settings_min_votes_summary"/>
+    <MultiSelectListPreference
+        android:title="@string/settings_min_year_title"
+        android:key = "@string/settings_min_year_key"
+        android:summary="@string/settings_min_year_summary"
+        android:entries="@array/yearArray"
+        android:entryValues="@array/yearValues"/>
 
 </PreferenceCategory>
 

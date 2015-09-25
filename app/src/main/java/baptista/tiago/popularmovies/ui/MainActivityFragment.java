@@ -78,8 +78,13 @@ public class MainActivityFragment extends Fragment {
         Log.d(TAG, "onCreateView()");
 
         if (mView != null) {
-            ((ViewGroup) mView.getParent()).removeView(mView);
-            updateDisplay();
+            try {
+                ((ViewGroup) mView.getParent()).removeView(mView);
+                updateDisplay();
+            } catch (Exception e) {
+                Log.w(TAG, "Exception caught: " + e);
+                return mView;
+            }
             return mView;
         } else {
             this.mView = inflater.inflate(R.layout.fragment_main, container, false);
@@ -99,7 +104,11 @@ public class MainActivityFragment extends Fragment {
             mAPIKey = getString(R.string.API_KEY);
             mQuery = getSortOrder();
             mURL = URLUtil.buildSearchURL(mQuery, mAPIKey, mPage);
-            this.getMovies();
+            try {
+                this.getMovies();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } else {
             Log.d(TAG, "Growing movie model...");
         }
@@ -127,12 +136,17 @@ public class MainActivityFragment extends Fragment {
                     String jsonData = response.body().string();
                     if (response.isSuccessful()) {
                         mAllMovies = ParseUtil.parseMovies(jsonData);
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                updateDisplay();
-                            }
-                        });
+                        try {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    updateDisplay();
+                                }
+                            });
+                        } catch (Exception e) {
+                            // Quick exception catcher to fix crash. Need to handle this better
+                            Log.e(TAG, "Exception caught: " + e);
+                        }
                     } else {
                         //popError();
                     }

@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Callback;
@@ -38,6 +39,7 @@ public class MainActivityFragment extends Fragment {
     private Context mContext;
     private View mView;
     private RecyclerView mRecyclerView;
+    private RelativeLayout mPlaceholderLayout;
 
     private AllMovies mAllMovies;
     private String mAPIKey;
@@ -80,17 +82,33 @@ public class MainActivityFragment extends Fragment {
         if (mView != null) {
             try {
                 ((ViewGroup) mView.getParent()).removeView(mView);
+
+                mRecyclerView = (RecyclerView) mView.findViewById(R.id.recyclerView);
+                mPlaceholderLayout = (RelativeLayout) mView.findViewById(R.id.placeholderLayout);
+
+                mPlaceholderLayout.setVisibility(View.VISIBLE);
+                mRecyclerView.setVisibility(View.INVISIBLE);
+
                 updateDisplay();
             } catch (Exception e) {
                 Log.w(TAG, "Exception caught: " + e);
-                return mView;
+                //return mView;
             }
-            return mView;
+            //return mView;
         } else {
             this.mView = inflater.inflate(R.layout.fragment_main, container, false);
+
+
+            mRecyclerView = (RecyclerView) mView.findViewById(R.id.recyclerView);
+            mPlaceholderLayout = (RelativeLayout) mView.findViewById(R.id.placeholderLayout);
+
+            mPlaceholderLayout.setVisibility(View.VISIBLE);
+            mRecyclerView.setVisibility(View.INVISIBLE);
+
             this.initiateAPICall(0);
-            return mView;
+            //return mView;
         }
+        return mView;
     }
 
     // Quick workaround, will fix when implementing infinite scroll
@@ -160,8 +178,9 @@ public class MainActivityFragment extends Fragment {
     }
 
     private void updateDisplay() {
-
-        mRecyclerView = (RecyclerView) mView.findViewById(R.id.recyclerView);
+        Log.d(TAG, "updateDisplay()" + mAllMovies.getMovies());
+        mPlaceholderLayout.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.VISIBLE);
 
         AllMoviesAdapter adapter = new AllMoviesAdapter(mContext, mAllMovies.getMovies());
         mRecyclerView.setAdapter(adapter);

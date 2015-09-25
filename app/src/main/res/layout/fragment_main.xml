@@ -6,6 +6,12 @@
                 tools:context=".MainActivityFragment"
                 android:background="#000000">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/placeholderLayout">
+    </RelativeLayout>
+
     <ProgressBar
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
@@ -13,6 +19,8 @@
         android:id="@+id/progressBar"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"/>
+
+
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"

@@ -1,20 +1,16 @@
 package baptista.tiago.popularmovies.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
 import baptista.tiago.popularmovies.R;
 import baptista.tiago.popularmovies.models.Movie;
-import baptista.tiago.popularmovies.ui.MovieDetailActivity;
 import baptista.tiago.popularmovies.utils.URLUtil;
 
 /**
@@ -23,7 +19,6 @@ import baptista.tiago.popularmovies.utils.URLUtil;
 public class AllMoviesAdapter extends RecyclerView.Adapter<AllMoviesAdapter.MovieViewHolder> {
 
     private static final String TAG = AllMoviesAdapter.class.getName();
-    public static final String CURRENT_MOVIE = "CURRENT_MOVIE";
 
     private Context mContext;
     private Movie[] mMovies;
@@ -50,8 +45,7 @@ public class AllMoviesAdapter extends RecyclerView.Adapter<AllMoviesAdapter.Movi
         return mMovies.length;
     }
 
-    public class MovieViewHolder extends RecyclerView.ViewHolder
-        implements View.OnClickListener {
+    public class MovieViewHolder extends RecyclerView.ViewHolder {
 
         public Movie currentMovie;
         public ImageView mPosterImageView;
@@ -59,7 +53,6 @@ public class AllMoviesAdapter extends RecyclerView.Adapter<AllMoviesAdapter.Movi
         public MovieViewHolder(View itemView) {
             super(itemView);
             mPosterImageView = (ImageView) itemView.findViewById(R.id.posterImageView);
-            itemView.setOnClickListener(this);
         }
 
         public void bindMovie(Movie movie) {
@@ -69,21 +62,6 @@ public class AllMoviesAdapter extends RecyclerView.Adapter<AllMoviesAdapter.Movi
                     .placeholder(R.drawable.placeholder_poster)
                     .error(R.drawable.error_poster)
                     .into(mPosterImageView);
-        }
-
-        @Override
-        public void onClick(View v) {
-            String title = currentMovie.getOriginalTitle();
-            Log.d(TAG, "bindMovie(): " + title);
-            startDetailActivity(currentMovie);
-        }
-
-        private void startDetailActivity(Movie currentMovie) {
-            Log.d(TAG, "startDetailActivity(): " + currentMovie);
-            Intent intent = new Intent(mContext, MovieDetailActivity.class);
-            //intent.putExtra(CURRENT_MOVIE, currentMovie);
-            intent.putExtra(CURRENT_MOVIE, currentMovie.getMovieArray());
-            mContext.startActivity(intent);
         }
     }
 }

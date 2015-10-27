@@ -20,5 +20,6 @@
     <string name="settings_min_year_title">Year</string>
     <string name="settings_min_year_key">minYearKey</string>
     <string name="settings_min_year_summary">Which year to look for.</string>
+    <string name="pleaseSelect">Select a movie on the left...</string>
 
 </resources>

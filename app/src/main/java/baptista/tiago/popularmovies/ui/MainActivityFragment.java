@@ -6,18 +6,17 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
-import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -29,13 +28,16 @@ import java.io.IOException;
 
 import baptista.tiago.popularmovies.R;
 import baptista.tiago.popularmovies.adapters.AllMoviesAdapter;
+import baptista.tiago.popularmovies.interfaces.MovieSelectorInterface;
 import baptista.tiago.popularmovies.models.AllMovies;
+import baptista.tiago.popularmovies.models.Movie;
 import baptista.tiago.popularmovies.utils.ParseUtil;
 import baptista.tiago.popularmovies.utils.URLUtil;
 
 public class MainActivityFragment extends Fragment {
 
-    private static final String TAG = MainActivityFragment.class.getName();
+    private static final String TAG = MainActivityFragment.class.getSimpleName();
+    //public static final String CURRENT_MOVIE = "CURRENT_MOVIE";
     private Context mContext;
     private View mView;
     private RecyclerView mRecyclerView;
@@ -82,7 +84,6 @@ public class MainActivityFragment extends Fragment {
         if (mView != null) {
             try {
                 ((ViewGroup) mView.getParent()).removeView(mView);
-
                 mRecyclerView = (RecyclerView) mView.findViewById(R.id.recyclerView);
                 mPlaceholderLayout = (RelativeLayout) mView.findViewById(R.id.placeholderLayout);
 
@@ -91,13 +92,11 @@ public class MainActivityFragment extends Fragment {
 
                 updateDisplay();
             } catch (Exception e) {
-                Log.w(TAG, "Exception caught: " + e);
-                //return mView;
+                Log.w(TAG, "onCreateView(): Exception caught: " + e);
+                e.printStackTrace();
             }
-            //return mView;
         } else {
             this.mView = inflater.inflate(R.layout.fragment_main, container, false);
-
 
             mRecyclerView = (RecyclerView) mView.findViewById(R.id.recyclerView);
             mPlaceholderLayout = (RelativeLayout) mView.findViewById(R.id.placeholderLayout);
@@ -106,7 +105,6 @@ public class MainActivityFragment extends Fragment {
             mRecyclerView.setVisibility(View.INVISIBLE);
 
             this.initiateAPICall(0);
-            //return mView;
         }
         return mView;
     }
@@ -114,10 +112,10 @@ public class MainActivityFragment extends Fragment {
     // Quick workaround, will fix when implementing infinite scroll
     //[0] = Running for the first time
     //[1] = Running from onResume()
+    //[2] = Running from onResume() for favorites
     private void initiateAPICall(int i) {
         Log.d(TAG, "initiateAPICall(): " + "[" + i + "]");
         if (mAllMovies == null || i == 1) {
-            // fetch API key and build URL with first page and saved query
             mPage = 1;
             mAPIKey = getString(R.string.API_KEY);
             mQuery = getSortOrder();
@@ -140,9 +138,7 @@ public class MainActivityFragment extends Fragment {
                 .url(mURL)
                 .build();
 
-        Call call = client.newCall(request);
-
-        call.enqueue(new Callback() {
+        client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Request request, IOException e) {
                 //popError();
@@ -163,7 +159,7 @@ public class MainActivityFragment extends Fragment {
                             });
                         } catch (Exception e) {
                             // Quick exception catcher to fix crash. Need to handle this better
-                            Log.e(TAG, "Exception caught: " + e);
+                            Log.e(TAG, "getMovies().onResponse(): Exception caught: " + e);
                         }
                     } else {
                         //popError();
@@ -185,12 +181,51 @@ public class MainActivityFragment extends Fragment {
         AllMoviesAdapter adapter = new AllMoviesAdapter(mContext, mAllMovies.getMovies());
         mRecyclerView.setAdapter(adapter);
 
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(mContext, getSpan() + 1);
-        //RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext);
-        mRecyclerView.setLayoutManager(layoutManager);
+        // Including a GestureDetector to capture clicks here instead of inside the RecyclerView adapter
+        final GestureDetector mGestureDetector = new GestureDetector(mContext, new GestureDetector.SimpleOnGestureListener() {
+            @Override public boolean onSingleTapUp(MotionEvent e) {
+                return true;
+            }
+        });
 
-        //mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+            @Override
+            public boolean onInterceptTouchEvent(RecyclerView recyclerView, MotionEvent motionEvent) {
+                View child = recyclerView.findChildViewUnder(motionEvent.getX(), motionEvent.getY());
+
+                if (child != null && mGestureDetector.onTouchEvent(motionEvent)) {
+                    Movie currentMovie = mAllMovies
+                            .getMovies()[mRecyclerView.getChildAdapterPosition(child)];
+
+                    // Inform main activity of item being clicked on
+                    ((MovieSelectorInterface) getActivity()).onItemSelected(currentMovie);
+                    //startDetailActivity(currentMovie);
+                    return true;
+                }
+                return false;
+            }
+
+            @Override // Mandatory
+            public void onTouchEvent(RecyclerView recyclerView, MotionEvent motionEvent) {
+            }
+
+            @Override // Mandatory
+            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+            }
+        });
+
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(mContext, getSpan());
+        mRecyclerView.setLayoutManager(layoutManager);
     }
+
+/*    private void startDetailActivity(Movie currentMovie) {
+        // Try and use interface instead of starting activity, but only if tablet
+        Log.d(TAG, "startDetailActivity(): " + currentMovie);
+        Intent intent = new Intent(mContext, MovieDetailActivity.class);
+        //intent.putExtra(CURRENT_MOVIE, currentMovie);
+        intent.putExtra(CURRENT_MOVIE, currentMovie.getMovieArray());
+        mContext.startActivity(intent);
+    }*/
 
     private int getSpan() {
         // should be getting recycleview width, not screen width
@@ -202,7 +237,9 @@ public class MainActivityFragment extends Fragment {
         float dpWidth  = outMetrics.widthPixels / density;
         // replace 300 with xml layout
         mColumns = Math.round(dpWidth / 300);
-        return mColumns;
+
+        // Check if tablet from local save, don't + 1 if so
+        return mColumns + 1;
     }
 
     private String getSortOrder() {
@@ -211,5 +248,4 @@ public class MainActivityFragment extends Fragment {
         Log.d(TAG, "Pref Sort Order[" + sortOrder + "]");
         return sortOrder;
     }
-
 }

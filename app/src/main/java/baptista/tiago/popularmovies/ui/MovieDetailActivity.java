@@ -19,15 +19,15 @@ public class MovieDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_movie_detail);
 
         Log.d(TAG, "onCreate(): Initializing fragment manager...");
-        FragmentManager fm = getFragmentManager();
-        fragmentData = fm.findFragmentByTag("mActivity");
+        //FragmentManager fm = getFragmentManager();
+        //fragmentData = fm.findFragmentByTag("mActivity");
 
-        if (fragmentData == null) {
+        /*if (fragmentData == null) {
             Log.d(TAG, "onCreate(): Creating fragment for the first time");
             fragmentData = new Fragment();
             fm.beginTransaction().add(fragmentData, "mActivity").commit();
         } else {
             Log.d(TAG, "onCreate(): Found existing fragment " + fragmentData);
-        }
+        }*/
     }
 }

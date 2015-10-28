@@ -21,5 +21,7 @@
     <string name="settings_min_year_key">minYearKey</string>
     <string name="settings_min_year_summary">Which year to look for.</string>
     <string name="pleaseSelect">Select a movie on the left...</string>
+    <string name="favorite_remove">Remove from favorites</string>
+    <string name="favorite_add">Add to favorites</string>
 
 </resources>

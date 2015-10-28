@@ -10,7 +10,8 @@
         android:id="@+id/placeholderLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#f96657">
+        android:background="#f96657"
+        tools:visibility="invisible">
 
         <LinearLayout
             android:orientation="vertical"
@@ -137,6 +138,45 @@
                             android:id="@+id/runtimeTextView"
                             android:textSize="15sp"
                             android:textColor="#50ffffff"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            tools:text="1h57m"
+                            android:id="@+id/detailRuntime"
+                            android:textColor="@android:color/white"
+                            android:layout_marginTop="5dp"
+                            android:textSize="20sp"
+                            android:layout_marginBottom="5dp" />
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:adjustViewBounds="true"
+                                android:id="@+id/favoriteImageView"
+                                tools:src="@drawable/favorite_off"
+                                android:scaleType="fitXY"
+                                android:layout_gravity="left"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                tools:text="Add to favorites"
+                                android:id="@+id/favoriteTextView"
+                                android:textSize="15sp"
+                                android:textColor="#50ffffff"
+                                android:layout_gravity="center"
+                                android:layout_centerVertical="true"
+                                android:layout_toRightOf="@+id/favoriteImageView"
+                                android:layout_toEndOf="@+id/favoriteImageView"
+                                android:layout_marginLeft="5dp"/>
+
+                        </RelativeLayout>
+
                     </LinearLayout>
 
                 </LinearLayout>
@@ -166,6 +206,87 @@
                     android:textColor="@android:color/white"
                     android:layout_margin="5dp"
                     android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/trailerTextView"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#50000000"
+                    android:textSize="20sp"
+                    android:text="Trailers"
+                    android:background="#50d8d8d8"
+                    android:textStyle="bold"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginLeft="1dp"
+                    android:layout_marginRight="1dp"/>
+
+                <TextView
+                    tools:text="Official Trailer"
+                    android:id="@+id/trailer1"
+                    android:gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:layout_margin="5dp"
+                    android:textSize="15sp" />
+
+                <TextView
+                    tools:text="Teaser Trailer"
+                    android:id="@+id/trailer2"
+                    android:gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:layout_margin="5dp"
+                    android:textSize="15sp" />
+
+                <TextView
+                    tools:text="TV Spot"
+                    android:id="@+id/trailer3"
+                    android:gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:layout_margin="5dp"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/reviewTextView"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#50000000"
+                    android:textSize="20sp"
+                    android:text="Reviews"
+                    android:background="#50d8d8d8"
+                    android:textStyle="bold"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginLeft="1dp"
+                    android:layout_marginRight="1dp"/>
+
+                <TextView
+                    tools:text="TV Spot"
+                    android:id="@+id/review1"
+                    android:gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:layout_margin="5dp"
+                    android:textSize="15sp" />
+
+                <TextView
+                    tools:text="TV Spot"
+                    android:id="@+id/review2"
+                    android:gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:layout_margin="5dp"
+                    android:textSize="15sp" />
+
             </LinearLayout>
 
         </RelativeLayout>

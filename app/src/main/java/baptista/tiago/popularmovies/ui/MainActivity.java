@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,13 +15,15 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import baptista.tiago.popularmovies.R;
+import baptista.tiago.popularmovies.interfaces.FavoritesInterface;
 import baptista.tiago.popularmovies.interfaces.MovieSelectorInterface;
 import baptista.tiago.popularmovies.models.Movie;
 import baptista.tiago.popularmovies.settings.SettingsActivity;
+import baptista.tiago.popularmovies.storage.DataStore;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements MovieSelectorInterface {
+public class MainActivity extends AppCompatActivity implements MovieSelectorInterface, FavoritesInterface {
 
     private static final String TAG = MainActivity.class.getName();
     //private MainActivityFragment fragmentData;
@@ -35,6 +38,10 @@ public class MainActivity extends AppCompatActivity implements MovieSelectorInte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Initialize DataStore in prep for favorites
+        DataStore.initialize(this);
+
         ButterKnife.bind(this);
         mIsTablet = false;
         mProgressBar.setVisibility(View.VISIBLE);
@@ -44,9 +51,10 @@ public class MainActivity extends AppCompatActivity implements MovieSelectorInte
             if (findViewById(R.id.layout_detail_fragment) != null) {
 
                 mIsTablet = true; // save this locally somewhere
+
                 MovieDetailActivityFragment starterFragment = new MovieDetailActivityFragment();
                 starterFragment.setTablet(true);
-                //initiateMovieGridFragment();
+
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.layout_detail_fragment, starterFragment, DETAIL_FRAGMENT_TAG)
                         .commit();
@@ -79,9 +87,13 @@ public class MainActivity extends AppCompatActivity implements MovieSelectorInte
     public void onItemSelected(Movie currentMovie) {
 
         if (mIsTablet) {
+            //Bundle args = new Bundle();
+            //args.putParcelable(MovieDetailActivity.CURRENT_MOVIE, currentMovie);
+
+
             MovieDetailActivityFragment detailFragment = new MovieDetailActivityFragment();
             detailFragment.setTablet(mIsTablet);
-            // Again with dirty data, must change this to Parcelable
+            // Again with dirty data, must change this to Parcelable/Serial
             detailFragment.setCurrentMovieDetails(currentMovie.getMovieArray());
 
             getSupportFragmentManager().beginTransaction()
@@ -93,35 +105,23 @@ public class MainActivity extends AppCompatActivity implements MovieSelectorInte
             startDetailActivity(currentMovie);
         }
     }
+    // Interfaces for DataStore integration
+    @Override
+    public void onItemFavorited(Movie currentMovie) {
+        DataStore.process(currentMovie);
+    }
+
+    @Override
+    public void onItemCheckFavorite(String id) {
+        DataStore.checkIfFavorite(id);
+    }
 
     private void startDetailActivity(Movie currentMovie) {
-        // Try and use interface instead of starting activity, but only if tablet
         Log.d(TAG, "startDetailActivity(): " + currentMovie);
         Intent intent = new Intent(this, MovieDetailActivity.class);
-        //intent.putExtra(CURRENT_MOVIE, currentMovie);
         intent.putExtra(CURRENT_MOVIE, currentMovie.getMovieArray());
         this.startActivity(intent);
     }
-
-   /* private void initiateMovieGridFragment() {
-        Log.d(TAG, "onCreate(): Initializing fragment manager...");
-        FragmentManager fm = getFragmentManager();
-        fragmentData = (MainActivityFragment) fm.findFragmentByTag("MainActivityFragment");
-
-        if (fragmentData == null) {
-            Log.d(TAG, "onCreate(): Creating fragment for the first time");
-            fragmentData = new MainActivityFragment();
-
-            //Bundle args = new Bundle();
-            //args.putSerializable(Fragment.CURRENT_MOVIE, result);
-
-            fm.beginTransaction()
-                    .add(fragmentData, "MainActivityFragment")
-                    .commit();
-        } else {
-            Log.d(TAG, "onCreate(): Found existing fragment " + fragmentData);
-        }
-    }*/
 
     private boolean isNetworkAvailable() {
         ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);

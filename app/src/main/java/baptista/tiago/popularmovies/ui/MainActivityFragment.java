@@ -199,7 +199,6 @@ public class MainActivityFragment extends Fragment {
 
                     // Inform main activity of item being clicked on
                     ((MovieSelectorInterface) getActivity()).onItemSelected(currentMovie);
-                    //startDetailActivity(currentMovie);
                     return true;
                 }
                 return false;
@@ -218,27 +217,16 @@ public class MainActivityFragment extends Fragment {
         mRecyclerView.setLayoutManager(layoutManager);
     }
 
-/*    private void startDetailActivity(Movie currentMovie) {
-        // Try and use interface instead of starting activity, but only if tablet
-        Log.d(TAG, "startDetailActivity(): " + currentMovie);
-        Intent intent = new Intent(mContext, MovieDetailActivity.class);
-        //intent.putExtra(CURRENT_MOVIE, currentMovie);
-        intent.putExtra(CURRENT_MOVIE, currentMovie.getMovieArray());
-        mContext.startActivity(intent);
-    }*/
-
     private int getSpan() {
-        // should be getting recycleview width, not screen width
+
         Display display = getActivity().getWindowManager().getDefaultDisplay();
         DisplayMetrics outMetrics = new DisplayMetrics();
         display.getMetrics(outMetrics);
 
         float density  = getResources().getDisplayMetrics().density;
         float dpWidth  = outMetrics.widthPixels / density;
-        // replace 300 with xml layout
-        mColumns = Math.round(dpWidth / 300);
+        mColumns = Math.round(dpWidth / mView.getWidth());
 
-        // Check if tablet from local save, don't + 1 if so
         return mColumns + 1;
     }
 
@@ -248,4 +236,5 @@ public class MainActivityFragment extends Fragment {
         Log.d(TAG, "Pref Sort Order[" + sortOrder + "]");
         return sortOrder;
     }
+
 }

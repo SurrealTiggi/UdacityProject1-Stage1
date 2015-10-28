@@ -11,6 +11,7 @@ import baptista.tiago.popularmovies.R;
 public class MovieDetailActivity extends AppCompatActivity {
 
     public static final String TAG = MovieDetailActivity.class.getName();
+    public static final String CURRENT_MOVIE = TAG + "_CURRENT_MOVIE";
     private Fragment fragmentData;
 
     @Override

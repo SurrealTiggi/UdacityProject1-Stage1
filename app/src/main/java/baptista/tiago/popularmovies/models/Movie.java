@@ -1,5 +1,7 @@
 package baptista.tiago.popularmovies.models;
 
+import java.util.List;
+
 /**
  * Created by Tiggi on 9/14/2015.
  */
@@ -10,6 +12,18 @@ public class Movie {
     private String mSynopsis;
     private Double mRating;
     private String mReleaseDate;
+    private boolean mIsFavorite;
+    private String mMovieID;
+    private List<String> mTrailers;
+    private List<String> mReviews;
+
+    public boolean isFavorite() {
+        return mIsFavorite;
+    }
+
+    public void setIsFavorite(boolean isFavorite) {
+        this.mIsFavorite = isFavorite;
+    }
 
     public String getOriginalTitle() {
         return mOriginalTitle;
@@ -48,7 +62,7 @@ public class Movie {
     }
 
     public String[] getMovieArray() {
-        String[] movieDetails = new String[5];
+        String[] movieDetails = new String[6];
         movieDetails[0] = this.getOriginalTitle();
         movieDetails[1] = this.getSynopsis();
         movieDetails[2] = this.getPoster();

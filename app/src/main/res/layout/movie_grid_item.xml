@@ -12,6 +12,6 @@
         android:padding="1dp"
         android:scaleType="fitXY"
         android:adjustViewBounds="true"
-        android:layout_margin="10dp"/>
+        />
 
 </FrameLayout>

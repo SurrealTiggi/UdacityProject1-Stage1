@@ -17,6 +17,7 @@ import com.squareup.picasso.Picasso;
 
 
 import baptista.tiago.popularmovies.R;
+import baptista.tiago.popularmovies.interfaces.FavoritesInterface;
 import baptista.tiago.popularmovies.utils.URLUtil;
 
 public class MovieDetailActivityFragment extends Fragment {
@@ -35,76 +36,21 @@ public class MovieDetailActivityFragment extends Fragment {
     private ScrollView mScrollView;
     private TextView mTitleView;
     private ImageView mPosterView;
-    private TextView mSynopsisView;
     private TextView mRatingView;
     private TextView mReleaseDateView;
-
+    private TextView mRuntimeView;
+    private ImageView mFavoriteImageView;
+    private TextView mFavoriteTextView;
+    private TextView mSynopsisView;
+    private TextView mTrailer1;
+    private TextView mTrailer2;
+    private TextView mTrailer3;
+    private TextView mReview1;
+    private TextView mReview2;
+    private boolean mIsFavorite;
 
     public MovieDetailActivityFragment() {
         Log.d(TAG, "Initializing MovieDetailActivityFragment()");
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView(): tablet? " + mTablet);
-
-        //if (mIntent.getStringArrayExtra("CURRENT_MOVIE") == null) {
-        if (mTablet && mCurrentMovieDetails == null) {
-            Log.d(TAG, "I'm a tablet with no movies, so initializing empty placeholder fragment...");
-            // Keep display as is and make other elements disappear
-            this.mView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
-
-            // Container views
-            this.mScrollView = (ScrollView) mView.findViewById(R.id.scrollView);
-            this.mTitleView = (TextView) mView.findViewById(R.id.detailOriginalTitle);
-            this.mTitleView.setVisibility(View.GONE);
-            this.mScrollView.setVisibility(View.GONE);
-
-            return mView;
-        } else {
-            // need to check if this way doesn't load the detail view in certain instances
-            if (mView != null) {
-                ((ViewGroup) mView.getParent()).removeView(mView);
-                return mView;
-            } else {
-                this.mView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
-                this.mPlaceholderFrameLayout = (FrameLayout) mView.findViewById(R.id.placeholderLayout);
-                this.mScrollView = (ScrollView) mView.findViewById(R.id.scrollView);
-                this.mTitleView = (TextView) mView.findViewById(R.id.detailOriginalTitle);
-                this.mSynopsisView = (TextView) mView.findViewById(R.id.detailSynopsis);
-                this.mPosterView = (ImageView) mView.findViewById(R.id.detailPosterImageView);
-                this.mRatingView = (TextView) mView.findViewById(R.id.detailRating);
-                this.mReleaseDateView = (TextView) mView.findViewById(R.id.detailReleaseDate);
-                updateDisplay();
-            }
-            return mView;
-        }
-    }
-
-    private void updateDisplay() {
-        this.mPlaceholderFrameLayout.setVisibility(View.GONE);
-
-        // This is dirty but it works for now...
-        if (!mTablet) {
-            mCurrentMovieDetails = mIntent.getStringArrayExtra("CURRENT_MOVIE");
-        }
-
-        // Populate the dirtiest detail view
-        Log.d(TAG, "Attempting to populate detail fragment");
-        mTitleView.setText(mCurrentMovieDetails[0]);
-        mSynopsisView.setText(mCurrentMovieDetails[1]);
-
-        // change to get from local cache
-        Picasso.with(getActivity())
-                .load(
-                        URLUtil.buildPosterURL(mCurrentMovieDetails[2])
-                )
-                .placeholder(R.drawable.placeholder_poster)
-                .error(R.drawable.error_poster)
-                .into(mPosterView);
-        mReleaseDateView.setText(mCurrentMovieDetails[3]);
-        mRatingView.setText(mCurrentMovieDetails[4]);
     }
 
     @Override
@@ -115,6 +61,157 @@ public class MovieDetailActivityFragment extends Fragment {
         this.mIntent = mActivity.getIntent();
         setHasOptionsMenu(true);
         setRetainInstance(true);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreateView()");
+
+        /*
+        first check if tablet and if savedstate = null -> create placeholder
+        if not tablet and not savedstate - > create fragment
+        else restore fragment either way
+         */
+        mView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
+
+        if (mTablet && mCurrentMovieDetails == null) {
+            Log.d(TAG, "I'm a tablet with no movies, so initializing empty placeholder fragment...");
+            // Container views
+            mScrollView = (ScrollView) mView.findViewById(R.id.scrollView);
+            mTitleView = (TextView) mView.findViewById(R.id.detailOriginalTitle);
+            mTitleView.setVisibility(View.GONE);
+            mScrollView.setVisibility(View.GONE);
+
+            return mView;
+        } else {
+            mView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
+            mPlaceholderFrameLayout = (FrameLayout) mView.findViewById(R.id.placeholderLayout);
+            mScrollView = (ScrollView) mView.findViewById(R.id.scrollView);
+            mTitleView = (TextView) mView.findViewById(R.id.detailOriginalTitle);
+            mSynopsisView = (TextView) mView.findViewById(R.id.detailSynopsis);
+            mPosterView = (ImageView) mView.findViewById(R.id.detailPosterImageView);
+            mRatingView = (TextView) mView.findViewById(R.id.detailRating);
+            mReleaseDateView = (TextView) mView.findViewById(R.id.detailReleaseDate);
+            mFavoriteImageView = (ImageView) mView.findViewById(R.id.favoriteImageView);
+            mFavoriteTextView = (TextView) mView.findViewById(R.id.favoriteTextView);
+
+            // Assume not a favorite, update next time
+            mIsFavorite = false;
+            mFavoriteImageView.setImageResource(R.drawable.favorite_off);
+            mFavoriteTextView.setText(getString(R.string.favorite_add));
+
+            // Using 2 onClicks for fat fingers
+            mFavoriteImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    toggleFavorite();
+                }
+            });
+            mFavoriteTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    toggleFavorite();
+                }
+            });
+            updateDisplay();
+        }
+
+/*        if (mTablet && mCurrentMovieDetails == null) {
+            Log.d(TAG, "I'm a tablet with no movies, so initializing empty placeholder fragment...");
+
+            mView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
+            // Container views
+            mScrollView = (ScrollView) mView.findViewById(R.id.scrollView);
+            mTitleView = (TextView) mView.findViewById(R.id.detailOriginalTitle);
+            mTitleView.setVisibility(View.GONE);
+            mScrollView.setVisibility(View.GONE);
+
+            return mView;
+        } else if (mView != null && !mTablet) {
+                ((ViewGroup) mView.getParent()).removeView(mView);
+                return mView;
+            } else {
+                mView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
+                mPlaceholderFrameLayout = (FrameLayout) mView.findViewById(R.id.placeholderLayout);
+                mScrollView = (ScrollView) mView.findViewById(R.id.scrollView);
+                mTitleView = (TextView) mView.findViewById(R.id.detailOriginalTitle);
+                mSynopsisView = (TextView) mView.findViewById(R.id.detailSynopsis);
+                mPosterView = (ImageView) mView.findViewById(R.id.detailPosterImageView);
+                mRatingView = (TextView) mView.findViewById(R.id.detailRating);
+                mReleaseDateView = (TextView) mView.findViewById(R.id.detailReleaseDate);
+                mFavoriteImageView = (ImageView) mView.findViewById(R.id.favoriteImageView);
+                mFavoriteTextView = (TextView) mView.findViewById(R.id.favoriteTextView);
+
+                // Assume not a favorite, update next time
+                mIsFavorite = false;
+                mFavoriteImageView.setImageResource(R.drawable.favorite_off);
+                mFavoriteTextView.setText(getString(R.string.favorite_add));
+
+                mFavoriteImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        toggleFavorite();
+                    }
+                });
+
+                updateDisplay();
+            }*/
+            return mView;
+        }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        Log.d(TAG, "onSaveInstanceState()");
+        super.onSaveInstanceState(savedInstanceState);
+        // save movie details as Parcelable
+        //savedInstanceState.putParcelable(STATE_MOVIE_DETAILS, this.movieDetails);
+    }
+
+    private void updateDisplay() {
+        mPlaceholderFrameLayout.setVisibility(View.GONE);
+
+        // This is dirty but it works for now...PARCELATE!!!!
+        if (!mTablet) {
+            mCurrentMovieDetails = mIntent.getStringArrayExtra("CURRENT_MOVIE");
+        }
+
+        // Populate the dirtiest detail view
+        Log.d(TAG, "Attempting to populate detail fragment");
+        mTitleView.setText(mCurrentMovieDetails[0]);
+        mSynopsisView.setText(mCurrentMovieDetails[1]);
+        Picasso.with(getActivity())
+                .load(
+                        URLUtil.buildPosterURL(mCurrentMovieDetails[2])
+                )
+                .placeholder(R.drawable.placeholder_poster)
+                .error(R.drawable.error_poster)
+                .into(mPosterView);
+        mReleaseDateView.setText(mCurrentMovieDetails[3]);
+        mRatingView.setText(mCurrentMovieDetails[4]);
+
+        // Check favorite status and update button accordingly
+        //mIsFavorite = ((FavoritesInterface) getActivity()).onItemCheckFavorite(mCurrentMovieDetails[0]);
+        if (mIsFavorite) {
+            //show it or don't show it
+        }
+
+    }
+
+    private void toggleFavorite() {
+        // Check if favorite first, add if not
+        if (!mIsFavorite) {
+            //((FavoritesInterface) getActivity()).onItemFavorited(mCurrentMovieDetails);
+            mFavoriteImageView.setImageResource(R.drawable.favorite_on);
+            mFavoriteTextView.setText(getString(R.string.favorite_remove));
+            mIsFavorite = true;
+        } else {
+            //((FavoritesInterface) getActivity()).onItemFavorited(mCurrentMovieDetails);
+            mFavoriteImageView.setImageResource(R.drawable.favorite_off);
+            mFavoriteTextView.setText(getString(R.string.favorite_add));
+            mIsFavorite = false;
+        }
     }
 
     public void setCurrentMovieDetails(String[] currentMovieDetails) {

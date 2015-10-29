@@ -37,7 +37,6 @@ import baptista.tiago.popularmovies.utils.URLUtil;
 public class MainActivityFragment extends Fragment {
 
     private static final String TAG = MainActivityFragment.class.getSimpleName();
-    //public static final String CURRENT_MOVIE = "CURRENT_MOVIE";
     private Context mContext;
     private View mView;
     private RecyclerView mRecyclerView;
@@ -114,7 +113,6 @@ public class MainActivityFragment extends Fragment {
     //[1] = Running from onResume()
     //[2] = Running from onResume() for favorites
     private void initiateAPICall(int i) {
-        Log.d(TAG, "initiateAPICall(): " + "[" + i + "]");
         if (mAllMovies == null || i == 1) {
             mPage = 1;
             mAPIKey = getString(R.string.API_KEY);
@@ -126,7 +124,7 @@ public class MainActivityFragment extends Fragment {
                 e.printStackTrace();
             }
         } else {
-            Log.d(TAG, "Growing movie model...");
+            Log.i(TAG, "Growing movie model...");
         }
     }
 
@@ -174,7 +172,7 @@ public class MainActivityFragment extends Fragment {
     }
 
     private void updateDisplay() {
-        Log.d(TAG, "updateDisplay()" + mAllMovies.getMovies());
+        Log.d(TAG, "updateDisplay()");
         mPlaceholderLayout.setVisibility(View.GONE);
         mRecyclerView.setVisibility(View.VISIBLE);
 

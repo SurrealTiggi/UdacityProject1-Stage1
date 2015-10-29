@@ -14,20 +14,12 @@
         tools:layout="@layout/fragment_main"
         android:layout_width="0dp"
         android:layout_weight="1"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"/>
 
    <FrameLayout
         android:id="@+id/layout_detail_fragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1" />
-
-   <!--<fragment
-        android:id="@+id/layout_detail_fragment"
-        android:name="baptista.tiago.popularmovies.ui.MovieDetailActivityFragment"
-        tools:layout="@layout/fragment_movie_detail"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="match_parent" />-->
 
 </LinearLayout>

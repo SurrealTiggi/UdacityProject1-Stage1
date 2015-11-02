@@ -31,21 +31,20 @@ public class MainActivity extends AppCompatActivity implements MovieSelectorInte
     private static final String IS_TABLET = TAG + "_IS_TABLET";
     public static final String CURRENT_MOVIE = "CURRENT_MOVIE";
 
-    @Bind(R.id.progressBar) ProgressBar mProgressBar;
+    //@Bind(R.id.progressBar) ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ButterKnife.bind(this);
+        //ButterKnife.bind(this);
         mIsTablet = false;
 
         if (isNetworkAvailable()) {
 
             DataStore db = new DataStore(this);
             db.getWritableDatabase();
-            Log.d(TAG, "Favorites >>> " + db.getAllFavorites().getCount());
 
             // Check if 2 pane by seeing if the detail fragment is being created
             if (findViewById(R.id.layout_detail_fragment) != null) {
@@ -73,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements MovieSelectorInte
         else {
             popNetworkError();
         }
-        mProgressBar.setVisibility(View.INVISIBLE);
+        //mProgressBar.setVisibility(View.INVISIBLE);
     }
 
     @Override

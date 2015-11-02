@@ -15,7 +15,10 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
@@ -31,6 +34,7 @@ import baptista.tiago.popularmovies.adapters.AllMoviesAdapter;
 import baptista.tiago.popularmovies.interfaces.MovieSelectorInterface;
 import baptista.tiago.popularmovies.models.AllMovies;
 import baptista.tiago.popularmovies.models.Movie;
+import baptista.tiago.popularmovies.storage.DataStore;
 import baptista.tiago.popularmovies.utils.ParseUtil;
 import baptista.tiago.popularmovies.utils.URLUtil;
 
@@ -41,6 +45,8 @@ public class MainActivityFragment extends Fragment {
     private View mView;
     private RecyclerView mRecyclerView;
     private RelativeLayout mPlaceholderLayout;
+    private FrameLayout mNoFavoritesLayout;
+    private ProgressBar mProgressBar;
 
     private AllMovies mAllMovies;
     private String mAPIKey;
@@ -68,8 +74,14 @@ public class MainActivityFragment extends Fragment {
         Log.d(TAG, "----------------------------------------------");
         Log.d(TAG, "onResume(): " + mQuery);
 
-        if (mQuery != null) {
+        if (getSortOrder().toString().equals("favorites")) {
+            toggleProgressBar();
+            toggleViews(0);
+            buildFavorites();
+        } else {
             if (mQuery != getSortOrder()) {
+                toggleProgressBar();
+                toggleViews(0);
                 this.initiateAPICall(1);
             }
         }
@@ -80,38 +92,41 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView()");
 
-        if (mView != null) {
+        if (mView != null && mAllMovies != null) { // Not running for the first time
             try {
                 ((ViewGroup) mView.getParent()).removeView(mView);
                 mRecyclerView = (RecyclerView) mView.findViewById(R.id.recyclerView);
                 mPlaceholderLayout = (RelativeLayout) mView.findViewById(R.id.placeholderLayout);
+                mNoFavoritesLayout = (FrameLayout) mView.findViewById(R.id.favoritesPlaceholderLayout);
 
-                mPlaceholderLayout.setVisibility(View.VISIBLE);
-                mRecyclerView.setVisibility(View.INVISIBLE);
-
+                toggleProgressBar();
+                toggleViews(0);
                 updateDisplay();
             } catch (Exception e) {
                 Log.w(TAG, "onCreateView(): Exception caught: " + e);
-                e.printStackTrace();
             }
-        } else {
+        } else { // Running for the first time
             this.mView = inflater.inflate(R.layout.fragment_main, container, false);
 
             mRecyclerView = (RecyclerView) mView.findViewById(R.id.recyclerView);
             mPlaceholderLayout = (RelativeLayout) mView.findViewById(R.id.placeholderLayout);
+            mNoFavoritesLayout = (FrameLayout) mView.findViewById(R.id.favoritesPlaceholderLayout);
 
-            mPlaceholderLayout.setVisibility(View.VISIBLE);
-            mRecyclerView.setVisibility(View.INVISIBLE);
+            toggleProgressBar();
+            toggleViews(0);
 
-            this.initiateAPICall(0);
+            if (getSortOrder().toString().equals("favorites")) {
+                buildFavorites();
+            } else {
+                this.initiateAPICall(0);
+            }
         }
         return mView;
     }
 
     // Quick workaround, will fix when implementing infinite scroll
-    //[0] = Running for the first time
-    //[1] = Running from onResume()
-    //[2] = Running from onResume() for favorites
+    //[0] = Running for the first time, or onResume()
+    //[1] = Running from onResume() for favorites
     private void initiateAPICall(int i) {
         if (mAllMovies == null || i == 1) {
             mPage = 1;
@@ -171,10 +186,10 @@ public class MainActivityFragment extends Fragment {
         });
     }
 
-    private void updateDisplay() {
+    private void updateDisplay() { // mMovies has data
         Log.d(TAG, "updateDisplay()");
-        mPlaceholderLayout.setVisibility(View.GONE);
-        mRecyclerView.setVisibility(View.VISIBLE);
+        toggleProgressBar();
+        toggleViews(0);
 
         AllMoviesAdapter adapter = new AllMoviesAdapter(mContext, mAllMovies.getMovies());
         mRecyclerView.setAdapter(adapter);
@@ -211,8 +226,58 @@ public class MainActivityFragment extends Fragment {
             }
         });
 
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(mContext, getSpan());
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(mContext, getSpan() + 1);
         mRecyclerView.setLayoutManager(layoutManager);
+    }
+
+    private void buildFavorites() {
+        Log.d(TAG, "Building favorites...");
+        mQuery = getSortOrder();
+
+        String jsonData = new DataStore(mContext).getAllFavorites();
+
+        try {
+            mAllMovies = ParseUtil.parseMovies(jsonData);
+        } catch (Exception e) {
+            mAllMovies = null;
+            Log.e(TAG, "buildFavorites(): Exception caught: " + e);
+        }
+
+        if (mAllMovies == null) {
+            toggleViews(1);
+        } else {
+            updateDisplay();
+        }
+    }
+
+    private void toggleProgressBar() {
+        mProgressBar = (ProgressBar) mView.findViewById(R.id.progressBar);
+        if (mProgressBar.getVisibility() == View.INVISIBLE) {
+            mProgressBar.setVisibility(View.VISIBLE);
+        } else {
+            mProgressBar.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void toggleViews(int option) {
+        switch (option) {
+            case 0: if (mRecyclerView.getVisibility() == View.VISIBLE || mNoFavoritesLayout.getVisibility() == View.VISIBLE) {
+                        Log.d(TAG, "Enabling placeholder");
+                        mNoFavoritesLayout.setVisibility(View.INVISIBLE);
+                        mPlaceholderLayout.setVisibility(View.VISIBLE);
+                        mRecyclerView.setVisibility(View.INVISIBLE);
+                    } else {
+                        Log.d(TAG, "Enabling recycler");
+                        mPlaceholderLayout.setVisibility(View.INVISIBLE);
+                        mRecyclerView.setVisibility(View.VISIBLE);
+                    };
+                    break;
+            case 1: Log.d(TAG, "Enabling favorites placeholder");
+                    mPlaceholderLayout.setVisibility(View.INVISIBLE);
+                    mRecyclerView.setVisibility(View.INVISIBLE);
+                    mNoFavoritesLayout.setVisibility(View.VISIBLE);
+                    break;
+        }
     }
 
     private int getSpan() {
@@ -224,15 +289,14 @@ public class MainActivityFragment extends Fragment {
         float density  = getResources().getDisplayMetrics().density;
         float dpWidth  = outMetrics.widthPixels / density;
         mColumns = Math.round(dpWidth / mView.getWidth());
+        Log.d(TAG, "Got span as: " + mColumns);
 
-        return mColumns + 1;
+        return mColumns;
     }
 
     private String getSortOrder() {
         SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(mContext);
         String sortOrder = (shared.getString(getString(R.string.settings_sort_order_key), ""));
-        Log.d(TAG, "Pref Sort Order[" + sortOrder + "]");
         return sortOrder;
     }
-
 }

@@ -38,6 +38,7 @@ public class ParseUtil {
             movie.setRating(jsonMovie.getDouble("vote_average"));
             movie.setReleaseDate(jsonMovie.getString("release_date"));
             movie.setPoster(jsonMovie.getString("poster_path"));
+            movie.setMovieID(jsonMovie.getInt("id"));
 
             movies[i] = movie;
         }

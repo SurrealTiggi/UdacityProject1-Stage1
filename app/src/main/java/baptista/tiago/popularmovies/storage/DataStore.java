@@ -93,14 +93,11 @@ public class DataStore extends SQLiteOpenHelper {
         return checkDB != null;
     }
 
-    public void addMovie(Movie movie) {
-    }
-
     public Movie getMovie(int id) {
         return null;
     }
 
-    public Cursor getAllFavorites() {
+    public String getAllFavorites() {
 
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_NAME;
@@ -111,13 +108,50 @@ public class DataStore extends SQLiteOpenHelper {
         list.add(0, "first movie");
         list.add(1, "second movie");*/
 
-        return cursor;
+        return null;
     }
 
-    public void deleteFavorite(Movie movie) {
+    public void addMovie(String[] movie) {
+        Log.d(TAG, "Adding movie: " + movie[0]);
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+
+        cv.put(F_TITLE, movie[0]);
+        cv.put(F_SYNOPSIS, movie[1]);
+        cv.put(F_POSTER, movie[2]);
+        cv.put(F_RELEASE_DATE, movie[3]);
+        cv.put(F_RATING, movie[4]);
+        cv.put(F_MOVIE_ID, movie[5]);
+        cv.put(F_RUNNING_TIME, "");
+        cv.put(F_TRAILER_KEY, "");
+
+        db.insert(TABLE_NAME, null, cv);
+        db.close();
     }
 
-    public boolean isMovieFavorite(int id) {
-        return true;
+    public void deleteMovie(String[] movie) {
+        Log.d(TAG, "Deleting movie: " + movie[0]);
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(TABLE_NAME, F_MOVIE_ID + " = ?",
+                new String[] {
+                        movie[5]
+                });
+        db.close();
+    }
+
+    public boolean isMovieFavorite(String id) {
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE movie_id = " + id;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.getCount() == 0) {
+            cursor.close();
+            return false;
+        } else {
+            cursor.close();
+            return true;
+        }
     }
 }

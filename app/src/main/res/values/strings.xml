@@ -9,6 +9,7 @@
     <string name="settings_sort_order_key">sortOrder</string>
     <string name="settings_sort_order_popular">Most Popular</string>
     <string name="settings_sort_order_ratings">Highest Rated</string>
+    <string name="settings_sort_order_favorites">My Favorites</string>
     <string name="settings_title_general">General Settings</string>
     <string name="settings_min_votes_title">Votes</string>
     <string name="settings_min_votes_key">minVotesKey</string>
@@ -23,5 +24,6 @@
     <string name="pleaseSelect">Select a movie on the left...</string>
     <string name="favorite_remove">Remove from favorites</string>
     <string name="favorite_add">Add to favorites</string>
+    <string name="noFavorites">You haven\'t favorited any movies</string>
 
 </resources>

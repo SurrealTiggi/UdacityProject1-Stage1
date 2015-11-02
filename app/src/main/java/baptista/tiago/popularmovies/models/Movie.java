@@ -12,17 +12,16 @@ public class Movie {
     private String mSynopsis;
     private Double mRating;
     private String mReleaseDate;
-    private boolean mIsFavorite;
-    private String mMovieID;
+    private int mMovieID;
     private List<String> mTrailers;
     private List<String> mReviews;
 
-    public boolean isFavorite() {
-        return mIsFavorite;
+    public int getMovieID() {
+        return mMovieID;
     }
 
-    public void setIsFavorite(boolean isFavorite) {
-        this.mIsFavorite = isFavorite;
+    public void setMovieID(int MovieID) {
+        this.mMovieID = MovieID;
     }
 
     public String getOriginalTitle() {
@@ -68,6 +67,8 @@ public class Movie {
         movieDetails[2] = this.getPoster();
         movieDetails[3] = this.getReleaseDate();
         movieDetails[4] = this.getRating().toString();
+        //movieDetails[5] = this.getRuntime();
+        movieDetails[5] = String.valueOf(this.getMovieID());
         return movieDetails;
     }
 

@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -26,16 +27,16 @@ public class DataStore extends SQLiteOpenHelper {
     private static Context mContext;
 
     // SQLite Variables
-    public static final String DB_NAME = "favorites.db";
+    public static final String DB_NAME = "my_favorites.db";
     public static final String TABLE_NAME = "favorite_movies";
-    public static final String F_MOVIE_ID = "movie_id";
+    public static final String F_MOVIE_ID = "id";
     public static final String F_TITLE = "original_title";
-    public static final String F_SYNOPSIS = "synopsis";
+    public static final String F_SYNOPSIS = "overview";
     public static final String F_RELEASE_DATE = "release_date";
-    public static final String F_RATING = "rating";
+    public static final String F_RATING = "vote_average";
     public static final String F_POSTER = "poster_path";
-    public static final String F_RUNNING_TIME = "runtime";
-    public static final String F_TRAILER_KEY = "trailer_key";
+   /* public static final String F_RUNNING_TIME = "runtime";
+    public static final String F_TRAILER_KEY = "trailer_key";*/
     private static String DB_PATH;
 
     private static final String[] COLUMNS = {
@@ -44,9 +45,8 @@ public class DataStore extends SQLiteOpenHelper {
             F_SYNOPSIS,
             F_RELEASE_DATE,
             F_RATING,
-            F_POSTER,
-            F_RUNNING_TIME,
-            F_TRAILER_KEY};
+            F_POSTER
+    };
 
     public DataStore(Context context) {
         super(context, DB_NAME, null, 1);
@@ -67,9 +67,7 @@ public class DataStore extends SQLiteOpenHelper {
                         F_SYNOPSIS + " TEXT," +
                         F_RELEASE_DATE + " TEXT," +
                         F_RATING + " DOUBLE," +
-                        F_POSTER + " TEXT," +
-                        F_RUNNING_TIME + " TEXT," +
-                        F_TRAILER_KEY + " TEXT)"
+                        F_POSTER + " TEXT)"
         );
     }
 
@@ -123,8 +121,6 @@ public class DataStore extends SQLiteOpenHelper {
         cv.put(F_RELEASE_DATE, movie[3]);
         cv.put(F_RATING, movie[4]);
         cv.put(F_MOVIE_ID, movie[5]);
-        cv.put(F_RUNNING_TIME, "");
-        cv.put(F_TRAILER_KEY, "");
 
         db.insert(TABLE_NAME, null, cv);
         db.close();
@@ -135,7 +131,7 @@ public class DataStore extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         db.delete(TABLE_NAME, F_MOVIE_ID + " = ?",
-                new String[] {
+                new String[]{
                         movie[5]
                 });
         db.close();

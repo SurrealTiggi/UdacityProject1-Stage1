@@ -11,29 +11,48 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 import com.squareup.picasso.Picasso;
 
 
+import org.json.JSONException;
+
+import java.io.IOException;
+import java.util.List;
+
 import baptista.tiago.popularmovies.R;
+import baptista.tiago.popularmovies.models.Reviews;
+import baptista.tiago.popularmovies.models.Trailers;
 import baptista.tiago.popularmovies.storage.DataStore;
+import baptista.tiago.popularmovies.utils.ParseUtil;
 import baptista.tiago.popularmovies.utils.URLUtil;
 
 public class MovieDetailActivityFragment extends Fragment {
 
     private static final String TAG = MovieDetailActivityFragment.class.getName();
     public static final String CURRENT_MOVIE = TAG + ".CURRENT.MOVIE";
+    public boolean mRan;
     private Activity mActivity;
     private View mView;
     private Intent mIntent;
     private String[] mCurrentMovieDetails;
     private boolean mTablet;
+    private List<Trailers> mTrailers;
+    private List<Reviews> mReviews;
     private DataStore mDataStore;
+    private String mAPIKey;
 
     // Placeholder views
     private FrameLayout mPlaceholderFrameLayout;
+    private ViewGroup mTrailersContainer;
+    private ViewGroup mReviewsContainer;
 
     // Detail views
     private ScrollView mScrollView;
@@ -45,11 +64,6 @@ public class MovieDetailActivityFragment extends Fragment {
     private ImageView mFavoriteImageView;
     private TextView mFavoriteTextView;
     private TextView mSynopsisView;
-    private TextView mTrailer1;
-    private TextView mTrailer2;
-    private TextView mTrailer3;
-    private TextView mReview1;
-    private TextView mReview2;
     private boolean mIsFavorite;
 
     public MovieDetailActivityFragment() {
@@ -63,6 +77,7 @@ public class MovieDetailActivityFragment extends Fragment {
         this.mActivity = getActivity();
         this.mIntent = mActivity.getIntent();
         this.mDataStore = new DataStore(mActivity);
+        this.mRan = false;
         setHasOptionsMenu(true);
         setRetainInstance(true);
     }
@@ -86,7 +101,7 @@ public class MovieDetailActivityFragment extends Fragment {
 
             return mView;
         } else {
-            mView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
+            //mView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
             mPlaceholderFrameLayout = (FrameLayout) mView.findViewById(R.id.placeholderLayout);
             mScrollView = (ScrollView) mView.findViewById(R.id.scrollView);
             mTitleView = (TextView) mView.findViewById(R.id.detailOriginalTitle);
@@ -98,10 +113,21 @@ public class MovieDetailActivityFragment extends Fragment {
             mFavoriteImageView = (ImageView) mView.findViewById(R.id.favoriteImageView);
             mFavoriteTextView = (TextView) mView.findViewById(R.id.favoriteTextView);
 
-            // Assume not a favorite, update next time
-            /*mIsFavorite = false;
-            mFavoriteImageView.setImageResource(R.drawable.favorite_off);
-            mFavoriteTextView.setText(getString(R.string.favorite_add));*/
+            mTrailersContainer = (ViewGroup) mView.findViewById(R.id.trailerPlaceholder);
+            mReviewsContainer = (ViewGroup) mView.findViewById(R.id.reviewPlaceholder);
+
+
+            // This is dirty but it works for now...PARCELATE!!!
+            if (!mTablet) {
+                mCurrentMovieDetails = mIntent.getStringArrayExtra("CURRENT_MOVIE");
+                /*mTrailers = mCurrentMovieDetails.getTrailers();
+                mReviews = mCurrentMovieDetails.getReviews();*/
+            }
+
+            if (!mRan) {
+                setupTrailersAndReviews();
+            }
+
             updateDisplay();
         }
             return mView;
@@ -111,19 +137,14 @@ public class MovieDetailActivityFragment extends Fragment {
     public void onSaveInstanceState(Bundle savedInstanceState) {
         Log.d(TAG, "onSaveInstanceState()");
         super.onSaveInstanceState(savedInstanceState);
-        // save movie details as Parcelable
-        savedInstanceState.putStringArray(CURRENT_MOVIE, this.mCurrentMovieDetails);
+        // Set this to not run trailers/reviews api call again
+        mRan = true;
     }
 
     private void updateDisplay() {
         mPlaceholderFrameLayout.setVisibility(View.GONE);
 
-        // This is dirty but it works for now...PARCELATE!!!
-        if (!mTablet) {
-            mCurrentMovieDetails = mIntent.getStringArrayExtra("CURRENT_MOVIE");
-        }
-
-        // Populate the dirtiest detail view
+        // Populate main view
         mTitleView.setText(mCurrentMovieDetails[0]);
         mSynopsisView.setText(mCurrentMovieDetails[1]);
         Picasso.with(getActivity())
@@ -137,8 +158,8 @@ public class MovieDetailActivityFragment extends Fragment {
         mRatingView.setText(mCurrentMovieDetails[4]);
         //mRuntimeView.setText(mCurrentMovieDetails[7]);
 
+        // Setup favorites
         this.mIsFavorite = checkFavorite();
-
         if (mIsFavorite) {
             mFavoriteImageView.setImageResource(R.drawable.favorite_on);
             mFavoriteTextView.setText(R.string.favorite_remove);
@@ -146,13 +167,28 @@ public class MovieDetailActivityFragment extends Fragment {
             mFavoriteImageView.setImageResource(R.drawable.favorite_off);
             mFavoriteTextView.setText(R.string.favorite_add);
         }
-
         mFavoriteImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 toggleFavorite();
             }
         });
+
+        // Populate trailers/reviews, if null do nothing else create dynamically
+    }
+
+    private void setupTrailersAndReviews() {
+        Log.d(TAG, "setupTrailersAndReviews()");
+        if(mTrailers == null || mReviews == null) {
+            mAPIKey = getString(R.string.API_KEY);
+            String trailerURL = URLUtil.buildTrailerURL(mCurrentMovieDetails[5], mAPIKey);
+            String reviewURL = URLUtil.buildReviewURL(mCurrentMovieDetails[5], mAPIKey);
+            //doAPICall(trailerURL);
+            //doAPICall(reviewURL);
+        }
+    }
+
+    private void doAPICall(String url) {
     }
 
     private boolean checkFavorite() {
@@ -185,9 +221,10 @@ public class MovieDetailActivityFragment extends Fragment {
 
     public void setCurrentMovieDetails(String[] currentMovieDetails) {
         mCurrentMovieDetails = currentMovieDetails;
+        /*mTrailers = mCurrentMovieDetails.getTrailers();
+        mReviews = mCurrentMovieDetails.getReviews();*/
     }
 
-    // Disable this?
     public void setTablet(boolean tablet) {
         mTablet = tablet;
     }

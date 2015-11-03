@@ -225,8 +225,9 @@ public class MainActivityFragment extends Fragment {
             public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
             }
         });
+        int span = getResources().getConfiguration().orientation;
 
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(mContext, getSpan() + 1);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(mContext, span + 1);
         mRecyclerView.setLayoutManager(layoutManager);
     }
 
@@ -244,8 +245,11 @@ public class MainActivityFragment extends Fragment {
         }
 
         if (mAllMovies == null) {
+            toggleProgressBar();
             toggleViews(1);
         } else {
+            toggleProgressBar();
+            toggleViews(0);
             updateDisplay();
         }
     }
@@ -280,7 +284,11 @@ public class MainActivityFragment extends Fragment {
         }
     }
 
-    private int getSpan() {
+/*    private int getSpan() {
+
+        // Get orientation, add +1 if portrait, else leave it.
+        int or = getResources().getConfiguration().orientation;
+        Log.d(TAG, "Current orientation: " + or);
 
         Display display = getActivity().getWindowManager().getDefaultDisplay();
         DisplayMetrics outMetrics = new DisplayMetrics();
@@ -291,8 +299,9 @@ public class MainActivityFragment extends Fragment {
         mColumns = Math.round(dpWidth / mView.getWidth());
         Log.d(TAG, "Got span as: " + mColumns);
 
-        return mColumns;
-    }
+        //return mColumns;
+        return or;
+    }*/
 
     private String getSortOrder() {
         SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(mContext);

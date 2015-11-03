@@ -9,7 +9,6 @@ import android.util.Log;
 public class URLUtil {
     private static final String TAG  = URLUtil.class.getName();
 
-    // Eg. https://api.themoviedb.org/3/discover/movie?api_key=4ad55f8322cc144be9c7665c5d3bff06&sort_by=popularity.desc
     public static String buildSearchURL(String searchOrder, String key, int page) {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("https")
@@ -23,11 +22,9 @@ public class URLUtil {
                 .appendQueryParameter("sort_by", searchOrder);
 
         String URL = builder.build().toString();
-        //Log.d(TAG, "Movie URL[" + URL + ")");
-        return(URL);
+        return URL;
     }
 
-    // Eg: http://image.tmdb.org/t/p/w500/2i0JH5WqYFqki7WDhUW56Sg0obh.jpg
     public static String buildPosterURL(String image) {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("http")
@@ -38,7 +35,35 @@ public class URLUtil {
                 .appendPath(image.startsWith("/") ? image.substring(1) : image);
 
         String URL = builder.build().toString();
-        //Log.d(TAG, "Poster URL[" + URL + ")");
-        return( URL );
+        return URL;
+    }
+    // Eg: https://api.themoviedb.org/3/movie/76341/videos?api_key=4ad55f8322cc144be9c7665c5d3bff06
+    public static String buildTrailerURL(String movieID, String key) {
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("https")
+                .authority("api.themoviedb.org")
+                .appendPath("3")
+                .appendPath("movie")
+                .appendPath("" + movieID)
+                .appendPath("videos")
+                .appendQueryParameter("api_key", key);
+
+        String URL = builder.build().toString();
+        return URL;
+    }
+    // Eg: https://api.themoviedb.org/3/movie/76341/reviews?api_key=4ad55f8322cc144be9c7665c5d3bff06
+    public static String buildReviewURL(String movieID, String key) {
+
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("https")
+                .authority("api.themoviedb.org")
+                .appendPath("3")
+                .appendPath("movie")
+                .appendPath("" + movieID)
+                .appendPath("reviews")
+                .appendQueryParameter("api_key", key);
+
+        String URL = builder.build().toString();
+        return URL;
     }
 }

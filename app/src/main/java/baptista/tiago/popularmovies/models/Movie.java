@@ -1,5 +1,6 @@
 package baptista.tiago.popularmovies.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,8 +14,26 @@ public class Movie {
     private Double mRating;
     private String mReleaseDate;
     private int mMovieID;
-    private List<String> mTrailers;
-    private List<String> mReviews;
+
+    private List<Trailers> mTrailers = new ArrayList<Trailers>();
+
+    public List<Reviews> getReviews() {
+        return mReviews;
+    }
+
+    public void setReviews(List<Reviews> reviews) {
+        mReviews = reviews;
+    }
+
+    public List<Trailers> getTrailers() {
+        return mTrailers;
+    }
+
+    public void setTrailers(List<Trailers> trailers) {
+        mTrailers = trailers;
+    }
+
+    private List<Reviews> mReviews = new ArrayList<Reviews>();
 
     public int getMovieID() {
         return mMovieID;

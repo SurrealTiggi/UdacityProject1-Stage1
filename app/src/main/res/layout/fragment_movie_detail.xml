@@ -223,32 +223,12 @@
                     android:layout_marginLeft="1dp"
                     android:layout_marginRight="1dp"/>
 
-                <TextView
-                    tools:text="Official Trailer"
-                    android:id="@+id/trailer1"
-                    android:gravity="center"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/trailerPlaceholder"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@android:color/white"
-                    android:layout_margin="5dp"
-                    android:textSize="15sp" />
-
-                <TextView
-                    tools:text="Teaser Trailer"
-                    android:id="@+id/trailer2"
                     android:gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@android:color/white"
-                    android:layout_margin="5dp"
-                    android:textSize="15sp" />
-
-                <TextView
-                    tools:text="TV Spot"
-                    android:id="@+id/trailer3"
-                    android:gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
                     android:textColor="@android:color/white"
                     android:layout_margin="5dp"
                     android:textSize="15sp" />
@@ -268,22 +248,12 @@
                     android:layout_marginLeft="1dp"
                     android:layout_marginRight="1dp"/>
 
-                <TextView
-                    tools:text="TV Spot"
-                    android:id="@+id/review1"
-                    android:gravity="center"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/reviewPlaceholder"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@android:color/white"
-                    android:layout_margin="5dp"
-                    android:textSize="15sp" />
-
-                <TextView
-                    tools:text="TV Spot"
-                    android:id="@+id/review2"
                     android:gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
                     android:textColor="@android:color/white"
                     android:layout_margin="5dp"
                     android:textSize="15sp" />

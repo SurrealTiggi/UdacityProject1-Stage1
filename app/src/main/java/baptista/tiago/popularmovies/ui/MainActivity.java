@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity implements MovieSelectorInte
         if (isNetworkAvailable()) {
 
             DataStore db = new DataStore(this);
-            db.getWritableDatabase();
 
             // Check if 2 pane by seeing if the detail fragment is being created
             if (findViewById(R.id.layout_detail_fragment) != null) {

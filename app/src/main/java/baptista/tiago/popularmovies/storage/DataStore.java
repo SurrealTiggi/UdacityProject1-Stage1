@@ -92,9 +92,9 @@ public class DataStore extends SQLiteOpenHelper {
         return checkDB != null;
     }*/
 
-    public List<Movie> getAllFavorites() {
-        //AllMovies allFavorites = new AllMovies();
-        List<Movie> allFavorites = new ArrayList<Movie>();
+    public AllMovies getAllFavorites() {
+        AllMovies allFavorites = new AllMovies();
+        List<Movie> movies = new ArrayList<Movie>();
 
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_NAME;
@@ -110,8 +110,9 @@ public class DataStore extends SQLiteOpenHelper {
             movie.setRating(cursor.getDouble(cursor.getColumnIndexOrThrow(F_RATING)));
             movie.setPoster(cursor.getString(cursor.getColumnIndexOrThrow(F_POSTER)));
 
-            allFavorites.add(movie);
+            movies.add(movie);
         }
+        allFavorites.setMovies(movies);
         return allFavorites;
     }
 

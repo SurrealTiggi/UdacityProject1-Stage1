@@ -236,16 +236,16 @@ public class MainActivityFragment extends Fragment {
     private void buildFavorites() {
         Log.d(TAG, "Building favorites...");
         mQuery = getSortOrder();
-        List<Movie> allFavorites = new DataStore(mContext).getAllFavorites();
+        AllMovies allFavorites = new DataStore(mContext).getAllFavorites();
 
-        mAllMovies.setMovies(allFavorites);
+        mAllMovies = allFavorites;
 
         if (mAllMovies == null) {
             toggleProgressBar();
             toggleViews(1);
         } else {
-            toggleProgressBar();
-            toggleViews(0);
+            //toggleProgressBar();
+            //toggleViews(0);
             updateDisplay();
         }
     }

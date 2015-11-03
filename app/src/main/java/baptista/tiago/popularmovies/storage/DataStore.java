@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import baptista.tiago.popularmovies.models.AllMovies;
 import baptista.tiago.popularmovies.models.Movie;
 
 /**
@@ -95,12 +96,14 @@ public class DataStore extends SQLiteOpenHelper {
         return null;
     }
 
-    public String getAllFavorites() {
+    public AllMovies getAllFavorites() {
 
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_NAME;
 
         Cursor cursor = db.rawQuery(query, null);
+
+        List<Movie> allFavorites = new ArrayList<Movie>();
 
         /*ArrayList<String> list = new ArrayList<>();
         list.add(0, "first movie");
@@ -109,36 +112,36 @@ public class DataStore extends SQLiteOpenHelper {
         return null;
     }
 
-    public void addMovie(String[] movie) {
-        Log.d(TAG, "Adding movie: " + movie[0]);
+    public void addMovie(Movie movie) {
+        Log.d(TAG, "Adding movie: " + movie.getMovieID());
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
-        cv.put(F_TITLE, movie[0]);
-        cv.put(F_SYNOPSIS, movie[1]);
-        cv.put(F_POSTER, movie[2]);
-        cv.put(F_RELEASE_DATE, movie[3]);
-        cv.put(F_RATING, movie[4]);
-        cv.put(F_MOVIE_ID, movie[5]);
+        cv.put(F_TITLE, movie.getOriginalTitle());
+        cv.put(F_SYNOPSIS, movie.getSynopsis());
+        cv.put(F_POSTER, movie.getPoster());
+        cv.put(F_RELEASE_DATE, movie.getReleaseDate());
+        cv.put(F_RATING, movie.getRating());
+        cv.put(F_MOVIE_ID, movie.getMovieID());
 
         db.insert(TABLE_NAME, null, cv);
         db.close();
     }
 
-    public void deleteMovie(String[] movie) {
-        Log.d(TAG, "Deleting movie: " + movie[0]);
+    public void deleteMovie(Movie movie) {
+        Log.d(TAG, "Deleting movie: " + movie.getMovieID());
         SQLiteDatabase db = this.getWritableDatabase();
 
         db.delete(TABLE_NAME, F_MOVIE_ID + " = ?",
                 new String[]{
-                        movie[5]
+                        movie.getMovieID()
                 });
         db.close();
     }
 
     public boolean isMovieFavorite(String id) {
-        String query = "SELECT * FROM " + TABLE_NAME + " WHERE movie_id = " + id;
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE id = " + id;
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
 

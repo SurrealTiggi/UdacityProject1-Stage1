@@ -2,7 +2,6 @@ package baptista.tiago.popularmovies.ui;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
@@ -10,8 +9,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import baptista.tiago.popularmovies.R;
@@ -25,7 +22,6 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity implements MovieSelectorInterface {
 
     private static final String TAG = MainActivity.class.getName();
-    //private MainActivityFragment fragmentData;
     private boolean mIsTablet;
     private static final String DETAIL_FRAGMENT_TAG = "DETAIL_FRAGMENT_TAG";
     private static final String IS_TABLET = TAG + "_IS_TABLET";
@@ -47,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements MovieSelectorInte
 
             // Check if 2 pane by seeing if the detail fragment is being created
             if (findViewById(R.id.layout_detail_fragment) != null) {
-                mIsTablet = true; // save this locally somewhere
+                mIsTablet = true;
 
                 MovieDetailActivityFragment fragment =
                         (MovieDetailActivityFragment) getSupportFragmentManager()
@@ -71,7 +67,6 @@ public class MainActivity extends AppCompatActivity implements MovieSelectorInte
         else {
             popNetworkError();
         }
-        //mProgressBar.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -100,8 +95,7 @@ public class MainActivity extends AppCompatActivity implements MovieSelectorInte
             //Bundle args = new Bundle();
             //args.putStringArray(MovieDetailActivity.CURRENT_MOVIE, currentMovie.getMovieArray());
             detailFragment.setTablet(mIsTablet);
-            // Again with dirty data, must change this to Parcelable/Serial
-            detailFragment.setCurrentMovieDetails(currentMovie.getMovieArray());
+            detailFragment.setCurrentMovieDetails(currentMovie);
 
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.layout_detail_fragment, detailFragment, DETAIL_FRAGMENT_TAG)
@@ -115,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements MovieSelectorInte
     private void startDetailActivity(Movie currentMovie) {
         Log.d(TAG, "startDetailActivity(): " + currentMovie);
         Intent intent = new Intent(this, MovieDetailActivity.class);
-        intent.putExtra(CURRENT_MOVIE, currentMovie.getMovieArray());
+        intent.putExtra(CURRENT_MOVIE, currentMovie);
         this.startActivity(intent);
     }
 

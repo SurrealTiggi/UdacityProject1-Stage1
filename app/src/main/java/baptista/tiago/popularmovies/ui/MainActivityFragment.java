@@ -28,6 +28,7 @@ import com.squareup.okhttp.Response;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.List;
 
 import baptista.tiago.popularmovies.R;
 import baptista.tiago.popularmovies.adapters.AllMoviesAdapter;
@@ -49,6 +50,7 @@ public class MainActivityFragment extends Fragment {
     private ProgressBar mProgressBar;
 
     private AllMovies mAllMovies;
+    private List<Movie> mMovieList;
     private String mAPIKey;
     private String mQuery;
     private String mURL;
@@ -235,14 +237,11 @@ public class MainActivityFragment extends Fragment {
         Log.d(TAG, "Building favorites...");
         mQuery = getSortOrder();
 
-        String jsonData = new DataStore(mContext).getAllFavorites();
+        //List<Movie> allFavorites = new DataStore(mContext).getAllFavorites();
+        //AllMovies allFavorites = new DataStore(mContext).getAllFavorites();
 
-        try {
-            mAllMovies = ParseUtil.parseMovies(jsonData);
-        } catch (Exception e) {
-            mAllMovies = null;
-            Log.e(TAG, "buildFavorites(): Exception caught: " + e);
-        }
+        //mAllMovies = allFavorites;
+        mAllMovies = null;
 
         if (mAllMovies == null) {
             toggleProgressBar();

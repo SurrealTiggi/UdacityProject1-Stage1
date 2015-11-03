@@ -25,6 +25,7 @@ public class ParseUtil {
         //Movie movie = new Movie();
         Log.d(TAG, "parseMovies()");
         AllMovies movies = new AllMovies();
+        //List<Movie> movies = new ArrayList<Movie>();
         movies.setMovies(getMovies(jsonData));
         return movies;
     }

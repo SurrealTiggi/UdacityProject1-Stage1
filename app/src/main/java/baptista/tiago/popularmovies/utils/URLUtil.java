@@ -38,7 +38,7 @@ public class URLUtil {
         return URL;
     }
     // Eg: https://api.themoviedb.org/3/movie/76341/videos?api_key=4ad55f8322cc144be9c7665c5d3bff06
-    public static String buildTrailerURL(String movieID, String key) {
+    public static Uri buildTrailerURL(String movieID, String key) {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("https")
                 .authority("api.themoviedb.org")
@@ -48,11 +48,11 @@ public class URLUtil {
                 .appendPath("videos")
                 .appendQueryParameter("api_key", key);
 
-        String URL = builder.build().toString();
+        Uri URL = builder.build();
         return URL;
     }
     // Eg: https://api.themoviedb.org/3/movie/76341/reviews?api_key=4ad55f8322cc144be9c7665c5d3bff06
-    public static String buildReviewURL(String movieID, String key) {
+    public static Uri buildReviewURL(String movieID, String key) {
 
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("https")
@@ -63,7 +63,7 @@ public class URLUtil {
                 .appendPath("reviews")
                 .appendQueryParameter("api_key", key);
 
-        String URL = builder.build().toString();
+        Uri URL = builder.build();
         return URL;
     }
 }

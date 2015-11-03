@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements MovieSelectorInte
                             .add(R.id.layout_detail_fragment, fragment, DETAIL_FRAGMENT_TAG)
                             .commit();
                 } else {
-                    Log.d(TAG, "Found existing tablet detail fragment so not re-creating");
+                    //Log.d(TAG, "Found existing tablet detail fragment so not re-creating");
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.layout_detail_fragment, fragment, DETAIL_FRAGMENT_TAG)
                             .commit();

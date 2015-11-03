@@ -31,7 +31,6 @@ public class ParseUtil {
     }
 
     private static List<Movie> getMovies(String jsonData) throws JSONException{
-        Log.d(TAG, "getMovies()");
         JSONObject movieList = new JSONObject(jsonData);
         JSONArray results = movieList.getJSONArray("results");
         //Movie[] movies = new Movie[results.length()];
@@ -53,7 +52,8 @@ public class ParseUtil {
         return movies;
     }
 
-    private static List<Trailers> parseTrailers(String jsonData) throws JSONException {
+    public static List<Trailers> parseTrailers(String jsonData) throws JSONException {
+        Log.d(TAG, "parseTrailers()");
         List<Trailers> trailers = new ArrayList<Trailers>();
 
         JSONObject trailerList = new JSONObject(jsonData);
@@ -77,7 +77,8 @@ public class ParseUtil {
         return trailers;
     }
 
-    private static List<Reviews> parseReviews(String jsonData) throws JSONException {
+    public static List<Reviews> parseReviews(String jsonData) throws JSONException {
+        Log.d(TAG, "parseReviews()");
         List<Reviews> reviews = new ArrayList<Reviews>();
 
         JSONObject reviewsList = new JSONObject(jsonData);

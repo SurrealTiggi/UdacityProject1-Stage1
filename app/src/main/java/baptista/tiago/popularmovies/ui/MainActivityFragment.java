@@ -7,9 +7,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -18,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
@@ -28,7 +25,6 @@ import com.squareup.okhttp.Response;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.List;
 
 import baptista.tiago.popularmovies.R;
 import baptista.tiago.popularmovies.adapters.AllMoviesAdapter;
@@ -53,7 +49,6 @@ public class MainActivityFragment extends Fragment {
     private String mAPIKey;
     private String mQuery;
     private String mURL;
-    private int mColumns;
     private int mPage;
 
     public MainActivityFragment() {
@@ -63,7 +58,6 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onCreate(Bundle state) {
         super.onCreate(state);
-        Log.d(TAG, "onCreate()");
         this.mContext = getActivity();
         setHasOptionsMenu(true);
         setRetainInstance(true);
@@ -72,8 +66,6 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "----------------------------------------------");
-        Log.d(TAG, "onResume(): " + mQuery);
 
         if (getSortOrder().toString().equals("favorites")) {
             toggleProgressBar();
@@ -188,7 +180,7 @@ public class MainActivityFragment extends Fragment {
     }
 
     private void updateDisplay() { // mMovies has data
-        Log.d(TAG, "updateDisplay()");
+        //Log.d(TAG, "updateDisplay()");
         toggleProgressBar();
         toggleViews(0);
 
@@ -234,18 +226,15 @@ public class MainActivityFragment extends Fragment {
     }
 
     private void buildFavorites() {
-        Log.d(TAG, "Building favorites...");
         mQuery = getSortOrder();
         AllMovies allFavorites = new DataStore(mContext).getAllFavorites();
 
         mAllMovies = allFavorites;
 
-        if (mAllMovies == null) {
+        if (mAllMovies.getMovies().size() == 0) {
             toggleProgressBar();
             toggleViews(1);
         } else {
-            //toggleProgressBar();
-            //toggleViews(0);
             updateDisplay();
         }
     }
@@ -262,42 +251,23 @@ public class MainActivityFragment extends Fragment {
     private void toggleViews(int option) {
         switch (option) {
             case 0: if (mRecyclerView.getVisibility() == View.VISIBLE || mNoFavoritesLayout.getVisibility() == View.VISIBLE) {
-                        Log.d(TAG, "Enabling placeholder");
+                        //Log.d(TAG, "Enabling placeholder");
                         mNoFavoritesLayout.setVisibility(View.INVISIBLE);
                         mPlaceholderLayout.setVisibility(View.VISIBLE);
                         mRecyclerView.setVisibility(View.INVISIBLE);
                     } else {
-                        Log.d(TAG, "Enabling recycler");
+                        //Log.d(TAG, "Enabling recycler");
                         mPlaceholderLayout.setVisibility(View.INVISIBLE);
                         mRecyclerView.setVisibility(View.VISIBLE);
                     };
                     break;
-            case 1: Log.d(TAG, "Enabling favorites placeholder");
+            case 1: //Log.d(TAG, "Enabling favorites placeholder");
                     mPlaceholderLayout.setVisibility(View.INVISIBLE);
                     mRecyclerView.setVisibility(View.INVISIBLE);
                     mNoFavoritesLayout.setVisibility(View.VISIBLE);
                     break;
         }
     }
-
-/*    private int getSpan() {
-
-        // Get orientation, add +1 if portrait, else leave it.
-        int or = getResources().getConfiguration().orientation;
-        Log.d(TAG, "Current orientation: " + or);
-
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        DisplayMetrics outMetrics = new DisplayMetrics();
-        display.getMetrics(outMetrics);
-
-        float density  = getResources().getDisplayMetrics().density;
-        float dpWidth  = outMetrics.widthPixels / density;
-        mColumns = Math.round(dpWidth / mView.getWidth());
-        Log.d(TAG, "Got span as: " + mColumns);
-
-        //return mColumns;
-        return or;
-    }*/
 
     private String getSortOrder() {
         SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(mContext);

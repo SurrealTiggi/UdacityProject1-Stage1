@@ -51,15 +51,14 @@ public class DataStore extends SQLiteOpenHelper {
 
     public DataStore(Context context) {
         super(context, DB_NAME, null, 1);
-        Log.d(TAG, "Initializing DataStore()");
         mContext = context;
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Log.d(TAG, "onCreate()");
+        //Log.d(TAG, "onCreate()");
         DB_PATH = Environment.getDataDirectory() + "/data/" + mContext.getApplicationContext().getPackageName() + "/databases/" + DB_NAME;
-        Log.d(TAG, "Data store >>> " + DB_PATH);
+        //Log.d(TAG, "Data store >>> " + DB_PATH);
 
         //Log.d(TAG, "DB doesn't exist, creating it...");
         db.execSQL("CREATE TABLE " + TABLE_NAME + " (" +

@@ -1,8 +1,9 @@
 package baptista.tiago.popularmovies.ui;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.provider.ContactsContract;
+import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,34 +12,31 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 import com.squareup.picasso.Picasso;
 
 
 import org.json.JSONException;
 
-import java.io.IOException;
 import java.util.List;
 
 import baptista.tiago.popularmovies.R;
+import baptista.tiago.popularmovies.interfaces.OnAPITaskCompleted;
 import baptista.tiago.popularmovies.models.Movie;
 import baptista.tiago.popularmovies.models.Reviews;
 import baptista.tiago.popularmovies.models.Trailers;
 import baptista.tiago.popularmovies.storage.DataStore;
+import baptista.tiago.popularmovies.tasks.APITask;
 import baptista.tiago.popularmovies.utils.ParseUtil;
 import baptista.tiago.popularmovies.utils.URLUtil;
 
-public class MovieDetailActivityFragment extends Fragment {
+public class MovieDetailActivityFragment extends Fragment implements OnAPITaskCompleted {
 
     private static final String TAG = MovieDetailActivityFragment.class.getName();
-    public static final String CURRENT_MOVIE = TAG + ".CURRENT.MOVIE";
+    //public static final String CURRENT_MOVIE = TAG + ".CURRENT.MOVIE";
     public boolean mRan;
     private Activity mActivity;
     private View mView;
@@ -68,13 +66,12 @@ public class MovieDetailActivityFragment extends Fragment {
     private boolean mIsFavorite;
 
     public MovieDetailActivityFragment() {
-        Log.d(TAG, "Initializing MovieDetailActivityFragment()");
+        //Log.d(TAG, "Initializing MovieDetailActivityFragment()");
     }
 
     @Override
     public void onCreate(Bundle state) {
         super.onCreate(state);
-        Log.d(TAG, "onCreate()");
         this.mActivity = getActivity();
         this.mIntent = mActivity.getIntent();
         this.mDataStore = new DataStore(mActivity);
@@ -88,7 +85,6 @@ public class MovieDetailActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreateView()");
-
 
         mView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
 
@@ -123,19 +119,18 @@ public class MovieDetailActivityFragment extends Fragment {
                 mTrailers = mCurrentMovieDetails.getTrailers();
                 mReviews = mCurrentMovieDetails.getReviews();
             }
-
             updateDisplay();
         }
             return mView;
         }
 
-    @Override
+/*    @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         Log.d(TAG, "onSaveInstanceState()");
         super.onSaveInstanceState(savedInstanceState);
         // Set this to not run trailers/reviews api call again
-        mRan = true;
-    }
+        this.mRan = true;
+    }*/
 
     private void updateDisplay() {
         mPlaceholderFrameLayout.setVisibility(View.GONE);
@@ -171,30 +166,85 @@ public class MovieDetailActivityFragment extends Fragment {
         });
 
         if (!mRan) {
-            setupTrailersAndReviews();
+            fetchTrailersAndReviews();
         }
 
         // Populate trailers/reviews, if null do nothing else create dynamically
+        if(mCurrentMovieDetails.getTrailers().size() == 0) {
+            /*View trailerView = (View)getActivity().getLayoutInflater().inflate(R.layout.list_item_no_items_explanation, this.container, false);
+            TextView name = (TextView)trailerView.findViewById(R.id.no_items);
+            name.setText("No Trailers Available");
+            trailersContainer.addView(trailerView);*/
+            Log.d(TAG, "No Trailers available");
+        }
+        if(mCurrentMovieDetails.getReviews().size() == 0) {
+            /*View reviewView = (View)getActivity().getLayoutInflater().inflate(R.layout.list_item_no_items_explanation, this.container, false);
+            TextView name = (TextView)reviewView.findViewById(R.id.no_items);
+            name.setText("No Reviews Available");
+            reviewsContainer.addView(reviewView);*/
+            Log.d(TAG, "No Reviews available");
+        }
+
+        for (Trailers trailer : mCurrentMovieDetails.getTrailers()) {
+            Log.d(TAG, "Trailer info: " + trailer.getName() + ", " + trailer.getType());
+        }
+        for (Reviews review : mCurrentMovieDetails.getReviews()) {
+            Log.d(TAG, "Review info: " + review.getAuthor());
+        }
 
     }
 
-    private void setupTrailersAndReviews() {
+    private void fetchTrailersAndReviews() {
         Log.d(TAG, "setupTrailersAndReviews()");
-        if(mTrailers == null || mReviews == null) {
-            mAPIKey = getString(R.string.API_KEY);
-            String trailerURL = URLUtil.buildTrailerURL(mCurrentMovieDetails.getMovieID(), mAPIKey);
-            String reviewURL = URLUtil.buildReviewURL(mCurrentMovieDetails.getMovieID(), mAPIKey);
+        mAPIKey = getString(R.string.API_KEY);
 
-            /*doAPICall(trailerURL);
-            result = onCompleted();
-            mCurrentMovieDetails.setTrailers(result);
-            doAPICall(reviewURL);
-            results = onCompleted();
-            mCurrentMovieDetails.setReviews(result);*/
+        if (mTrailers.size() == 0 || mReviews.size() == 0 ) {
+            Uri trailerURL = URLUtil.buildTrailerURL(mCurrentMovieDetails.getMovieID(), mAPIKey);
+            Uri reviewURL = URLUtil.buildReviewURL(mCurrentMovieDetails.getMovieID(), mAPIKey);
+
+            //Log.d(TAG, "Initiating asynctask...");
+            APITask trailersTask = new APITask(this, 0);
+            trailersTask.execute(trailerURL);
+
+            APITask reviewsTask = new APITask(this, 1);
+            reviewsTask.execute(reviewURL);
+            mRan = true;
         }
     }
 
-    private void doAPICall(String url) {
+    @Override
+    public void onAPITaskCompleted(String result, int task) {
+        switch(task) {
+        case 0 :    try {
+                        mTrailers = ParseUtil.parseTrailers(result);
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Exception caught: ", e);
+                    }
+                    break;
+        case 1 :    try {
+                        mReviews = ParseUtil.parseReviews(result);
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Exception caught: ", e);
+                    }
+                    break;
+        }
+        mCurrentMovieDetails.setTrailers(mTrailers);
+        mCurrentMovieDetails.setReviews(mReviews);
+        try {
+            updateDisplay();
+        } catch (Exception e){
+            Log.e(TAG, "Pre-empting user being dumb and selecting another movie before the view is updated");
+        }
+    }
+
+    private void playYoutube(String trailerTag){
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + trailerTag));
+            startActivity(intent);
+        } catch (ActivityNotFoundException ex){
+            Intent intent = new Intent (Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + trailerTag));
+            startActivity(intent);
+        }
     }
 
     private void toggleFavorite() {

@@ -30,11 +30,12 @@ public class ParseUtil {
         return movies;
     }
 
-    private static Movie[] getMovies(String jsonData) throws JSONException{
+    private static List<Movie> getMovies(String jsonData) throws JSONException{
         Log.d(TAG, "getMovies()");
         JSONObject movieList = new JSONObject(jsonData);
         JSONArray results = movieList.getJSONArray("results");
-        Movie[] movies = new Movie[results.length()];
+        //Movie[] movies = new Movie[results.length()];
+        List<Movie> movies = new ArrayList<Movie>();
 
         for (int i=0; i < results.length(); i++) {
             JSONObject jsonMovie = results.getJSONObject(i);
@@ -47,7 +48,7 @@ public class ParseUtil {
             movie.setPoster(jsonMovie.getString("poster_path"));
             movie.setMovieID(jsonMovie.getInt("id"));
 
-            movies[i] = movie;
+            movies.add(movie);
         }
         return movies;
     }

@@ -9,6 +9,8 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.List;
+
 import baptista.tiago.popularmovies.R;
 import baptista.tiago.popularmovies.models.Movie;
 import baptista.tiago.popularmovies.utils.URLUtil;
@@ -21,9 +23,9 @@ public class AllMoviesAdapter extends RecyclerView.Adapter<AllMoviesAdapter.Movi
     private static final String TAG = AllMoviesAdapter.class.getName();
 
     private Context mContext;
-    private Movie[] mMovies;
+    private List<Movie> mMovies;
 
-    public AllMoviesAdapter(Context context, Movie[] movies) {
+    public AllMoviesAdapter(Context context, List<Movie> movies) {
         this.mContext = context;
         mMovies = movies;
     }
@@ -37,12 +39,12 @@ public class AllMoviesAdapter extends RecyclerView.Adapter<AllMoviesAdapter.Movi
 
     @Override
     public void onBindViewHolder(MovieViewHolder holder, int position) {
-        holder.bindMovie(mMovies[position]);
+        holder.bindMovie(mMovies.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return mMovies.length;
+        return mMovies.size();
     }
 
     public class MovieViewHolder extends RecyclerView.ViewHolder {

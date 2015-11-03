@@ -43,8 +43,7 @@ public class MovieDetailActivityFragment extends Fragment {
     private Activity mActivity;
     private View mView;
     private Intent mIntent;
-    //private String[] mCurrentMovieDetails;
-    private Movie mCurrentMovieParc;
+    private Movie mCurrentMovieDetails;
     private boolean mTablet;
     private List<Trailers> mTrailers;
     private List<Reviews> mReviews;
@@ -93,7 +92,7 @@ public class MovieDetailActivityFragment extends Fragment {
 
         mView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
 
-        if (mTablet && mCurrentMovieParc == null) {
+        if (mTablet && mCurrentMovieDetails == null) {
             Log.d(TAG, "I'm a tablet with no movies, so initializing empty placeholder fragment...");
             // Container views
             mScrollView = (ScrollView) mView.findViewById(R.id.scrollView);
@@ -119,16 +118,10 @@ public class MovieDetailActivityFragment extends Fragment {
             mReviewsContainer = (ViewGroup) mView.findViewById(R.id.reviewPlaceholder);
 
 
-            // This is dirty but it works for now...PARCELATE!!!
             if (!mTablet) {
-                //mCurrentMovieDetails = mIntent.getStringArrayExtra("CURRENT_MOVIE");
-                mCurrentMovieParc = mIntent.getParcelableExtra("CURRENT_MOVIE");
-                /*mTrailers = mCurrentMovieDetails.getTrailers();
-                mReviews = mCurrentMovieDetails.getReviews();*/
-            }
-
-            if (!mRan) {
-                setupTrailersAndReviews();
+                mCurrentMovieDetails = mIntent.getParcelableExtra("CURRENT_MOVIE");
+                mTrailers = mCurrentMovieDetails.getTrailers();
+                mReviews = mCurrentMovieDetails.getReviews();
             }
 
             updateDisplay();
@@ -148,21 +141,21 @@ public class MovieDetailActivityFragment extends Fragment {
         mPlaceholderFrameLayout.setVisibility(View.GONE);
 
         // Populate main view
-        mTitleView.setText(mCurrentMovieParc.getOriginalTitle());
-        mSynopsisView.setText(mCurrentMovieParc.getSynopsis());
+        mTitleView.setText(mCurrentMovieDetails.getOriginalTitle());
+        mSynopsisView.setText(mCurrentMovieDetails.getSynopsis());
         Picasso.with(getActivity())
                 .load(
-                        URLUtil.buildPosterURL(mCurrentMovieParc.getPoster())
+                        URLUtil.buildPosterURL(mCurrentMovieDetails.getPoster())
                 )
                 .placeholder(R.drawable.placeholder_poster)
                 .error(R.drawable.error_poster)
                 .into(mPosterView);
-        mReleaseDateView.setText(mCurrentMovieParc.getReleaseDate());
-        mRatingView.setText(mCurrentMovieParc.getRating().toString());
+        mReleaseDateView.setText(mCurrentMovieDetails.getReleaseDate());
+        mRatingView.setText(mCurrentMovieDetails.getRating().toString());
         //mRuntimeView.setText(mCurrentMovieDetails[7]);
 
         // Setup favorites
-        this.mIsFavorite = checkFavorite();
+        this.mIsFavorite = mDataStore.isMovieFavorite(mCurrentMovieDetails.getMovieID());
         if (mIsFavorite) {
             mFavoriteImageView.setImageResource(R.drawable.favorite_on);
             mFavoriteTextView.setText(R.string.favorite_remove);
@@ -177,26 +170,31 @@ public class MovieDetailActivityFragment extends Fragment {
             }
         });
 
+        if (!mRan) {
+            setupTrailersAndReviews();
+        }
+
         // Populate trailers/reviews, if null do nothing else create dynamically
+
     }
 
     private void setupTrailersAndReviews() {
         Log.d(TAG, "setupTrailersAndReviews()");
         if(mTrailers == null || mReviews == null) {
             mAPIKey = getString(R.string.API_KEY);
-            String trailerURL = URLUtil.buildTrailerURL(mCurrentMovieParc.getMovieID(), mAPIKey);
-            String reviewURL = URLUtil.buildReviewURL(mCurrentMovieParc.getMovieID(), mAPIKey);
-            //doAPICall(trailerURL);
-            //doAPICall(reviewURL);
+            String trailerURL = URLUtil.buildTrailerURL(mCurrentMovieDetails.getMovieID(), mAPIKey);
+            String reviewURL = URLUtil.buildReviewURL(mCurrentMovieDetails.getMovieID(), mAPIKey);
+
+            /*doAPICall(trailerURL);
+            result = onCompleted();
+            mCurrentMovieDetails.setTrailers(result);
+            doAPICall(reviewURL);
+            results = onCompleted();
+            mCurrentMovieDetails.setReviews(result);*/
         }
     }
 
     private void doAPICall(String url) {
-    }
-
-    private boolean checkFavorite() {
-        boolean isIt = mDataStore.isMovieFavorite(mCurrentMovieParc.getMovieID());
-        return isIt;
     }
 
     private void toggleFavorite() {
@@ -214,18 +212,18 @@ public class MovieDetailActivityFragment extends Fragment {
     }
 
     private void removeFavorite() {
-        mDataStore.deleteMovie(mCurrentMovieParc);
+        mDataStore.deleteMovie(mCurrentMovieDetails);
     }
 
     private void addFavorite() {
-        mDataStore.addMovie(mCurrentMovieParc);
+        mDataStore.addMovie(mCurrentMovieDetails);
     }
 
 
     public void setCurrentMovieDetails(Movie currentMovieDetails) {
-        mCurrentMovieParc = currentMovieDetails;
-        /*mTrailers = mCurrentMovieDetails.getTrailers();
-        mReviews = mCurrentMovieDetails.getReviews();*/
+        mCurrentMovieDetails = currentMovieDetails;
+        mTrailers = mCurrentMovieDetails.getTrailers();
+        mReviews = mCurrentMovieDetails.getReviews();
     }
 
     public void setTablet(boolean tablet) {

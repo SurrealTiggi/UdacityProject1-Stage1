@@ -1,17 +1,19 @@
 package baptista.tiago.popularmovies.models;
 
+import java.util.List;
+
 /**
  * Created by Tiggi on 9/15/2015.
  */
 public class AllMovies {
 
-    private Movie[] mMovies;
+    private List<Movie> mMovies;
 
-    public Movie[] getMovies() {
+    public List<Movie> getMovies() {
         return mMovies;
     }
 
-    public void setMovies(Movie[] movies) {
+    public void setMovies(List<Movie> movies) {
         mMovies = movies;
     }
 }

@@ -50,7 +50,6 @@ public class MainActivityFragment extends Fragment {
     private ProgressBar mProgressBar;
 
     private AllMovies mAllMovies;
-    private List<Movie> mMovieList;
     private String mAPIKey;
     private String mQuery;
     private String mURL;
@@ -210,7 +209,8 @@ public class MainActivityFragment extends Fragment {
 
                 if (child != null && mGestureDetector.onTouchEvent(motionEvent)) {
                     Movie currentMovie = mAllMovies
-                            .getMovies()[mRecyclerView.getChildAdapterPosition(child)];
+                            .getMovies()
+                            .get(mRecyclerView.getChildAdapterPosition(child));
 
                     // Inform main activity of item being clicked on
                     ((MovieSelectorInterface) getActivity()).onItemSelected(currentMovie);
@@ -236,12 +236,9 @@ public class MainActivityFragment extends Fragment {
     private void buildFavorites() {
         Log.d(TAG, "Building favorites...");
         mQuery = getSortOrder();
+        List<Movie> allFavorites = new DataStore(mContext).getAllFavorites();
 
-        //List<Movie> allFavorites = new DataStore(mContext).getAllFavorites();
-        //AllMovies allFavorites = new DataStore(mContext).getAllFavorites();
-
-        //mAllMovies = allFavorites;
-        mAllMovies = null;
+        mAllMovies.setMovies(allFavorites);
 
         if (mAllMovies == null) {
             toggleProgressBar();

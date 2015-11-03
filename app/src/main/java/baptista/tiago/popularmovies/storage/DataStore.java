@@ -80,7 +80,7 @@ public class DataStore extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    private boolean doesDatabaseExist() {
+/*    private boolean doesDatabaseExist() {
         SQLiteDatabase checkDB = null;
         try {
             checkDB = SQLiteDatabase.openDatabase(DB_PATH, null,
@@ -90,26 +90,29 @@ public class DataStore extends SQLiteOpenHelper {
             Log.e(TAG, "DB does not exist yet");
         }
         return checkDB != null;
-    }
+    }*/
 
-    public Movie getMovie(int id) {
-        return null;
-    }
-
-    public AllMovies getAllFavorites() {
+    public List<Movie> getAllFavorites() {
+        //AllMovies allFavorites = new AllMovies();
+        List<Movie> allFavorites = new ArrayList<Movie>();
 
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_NAME;
-
         Cursor cursor = db.rawQuery(query, null);
 
-        List<Movie> allFavorites = new ArrayList<Movie>();
+        while (cursor.moveToNext()) {
+            Movie movie = new Movie();
 
-        /*ArrayList<String> list = new ArrayList<>();
-        list.add(0, "first movie");
-        list.add(1, "second movie");*/
+            movie.setMovieID(cursor.getInt(cursor.getColumnIndexOrThrow(F_MOVIE_ID)));
+            movie.setOriginalTitle(cursor.getString(cursor.getColumnIndexOrThrow(F_TITLE)));
+            movie.setSynopsis(cursor.getString(cursor.getColumnIndexOrThrow(F_SYNOPSIS)));
+            movie.setReleaseDate(cursor.getString(cursor.getColumnIndexOrThrow(F_RELEASE_DATE)));
+            movie.setRating(cursor.getDouble(cursor.getColumnIndexOrThrow(F_RATING)));
+            movie.setPoster(cursor.getString(cursor.getColumnIndexOrThrow(F_POSTER)));
 
-        return null;
+            allFavorites.add(movie);
+        }
+        return allFavorites;
     }
 
     public void addMovie(Movie movie) {

@@ -20,6 +20,7 @@ import com.squareup.picasso.Picasso;
 
 
 import org.json.JSONException;
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -47,6 +48,7 @@ public class MovieDetailActivityFragment extends Fragment implements OnAPITaskCo
     private List<Reviews> mReviews;
     private DataStore mDataStore;
     private String mAPIKey;
+    private ViewGroup mContainer;
 
     // Placeholder views
     private FrameLayout mPlaceholderFrameLayout;
@@ -85,6 +87,7 @@ public class MovieDetailActivityFragment extends Fragment implements OnAPITaskCo
                              Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreateView()");
+        this.mContainer = container;
 
         mView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
 
@@ -171,25 +174,16 @@ public class MovieDetailActivityFragment extends Fragment implements OnAPITaskCo
 
         // Populate trailers/reviews, if null do nothing else create dynamically
         if(mCurrentMovieDetails.getTrailers().size() == 0) {
-            /*View trailerView = (View)getActivity().getLayoutInflater().inflate(R.layout.list_item_no_items_explanation, this.container, false);
-            TextView name = (TextView)trailerView.findViewById(R.id.no_items);
-            name.setText("No Trailers Available");
-            trailersContainer.addView(trailerView);*/
             Log.d(TAG, "No Trailers available");
         }
         if(mCurrentMovieDetails.getReviews().size() == 0) {
-            /*View reviewView = (View)getActivity().getLayoutInflater().inflate(R.layout.list_item_no_items_explanation, this.container, false);
-            TextView name = (TextView)reviewView.findViewById(R.id.no_items);
-            name.setText("No Reviews Available");
-            reviewsContainer.addView(reviewView);*/
             Log.d(TAG, "No Reviews available");
         }
 
-        for (Trailers trailer : mCurrentMovieDetails.getTrailers()) {
-            Log.d(TAG, "Trailer info: " + trailer.getName() + ", " + trailer.getType());
-        }
-        for (Reviews review : mCurrentMovieDetails.getReviews()) {
-            Log.d(TAG, "Review info: " + review.getAuthor());
+        try {
+            updateDisplayWithExtras();
+        } catch (Exception e) {
+            Log.e(TAG, "updateDisplayWithExtras(): Exception caught! " + e);
         }
 
     }
@@ -208,7 +202,6 @@ public class MovieDetailActivityFragment extends Fragment implements OnAPITaskCo
 
             APITask reviewsTask = new APITask(this, 1);
             reviewsTask.execute(reviewURL);
-            mRan = true;
         }
     }
 
@@ -228,12 +221,64 @@ public class MovieDetailActivityFragment extends Fragment implements OnAPITaskCo
                     }
                     break;
         }
+
         mCurrentMovieDetails.setTrailers(mTrailers);
         mCurrentMovieDetails.setReviews(mReviews);
+
+        mRan = true;
+
         try {
-            updateDisplay();
+            updateDisplayWithExtras();
         } catch (Exception e){
             Log.e(TAG, "Pre-empting user being dumb and selecting another movie before the view is updated");
+            e.printStackTrace();
+        }
+    }
+
+    private void updateDisplayWithExtras() {
+
+        if (mCurrentMovieDetails.getTrailers().size() > 0) {
+            for (final Trailers trailer : mCurrentMovieDetails.getTrailers()) {
+
+                View trailerListItemView = (View) mActivity.getLayoutInflater().inflate(R.layout.trailer_list_item, this.mContainer, false);
+                ImageView playImage = (ImageView) trailerListItemView.findViewById(R.id.trailerPlayImage);
+                TextView playText = (TextView) trailerListItemView.findViewById(R.id.trailerNameText);
+
+                Log.d(TAG, "Trailer info: " + trailer.getName() + ", key: " + trailer.getKey());
+
+                playText.setText(trailer.getName());
+                playText.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        playYoutube(trailer.getKey());
+                    }
+                });
+                playImage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        playYoutube(trailer.getKey());
+                    }
+                });
+
+                mTrailersContainer.addView(trailerListItemView);
+            }
+        }
+
+        if (mCurrentMovieDetails.getReviews().size() > 0) {
+            for (Reviews review : mCurrentMovieDetails.getReviews()) {
+
+                View reviewsListItemView = (View) mActivity.getLayoutInflater().inflate(R.layout.review_list_item, this.mContainer, false);
+                ImageView reviewImage = (ImageView) reviewsListItemView.findViewById(R.id.reviewImage);
+                TextView authorText = (TextView) reviewsListItemView.findViewById(R.id.reviewAuthorText);
+                TextView reviewText = (TextView) reviewsListItemView.findViewById(R.id.reviewText);
+
+                Log.d(TAG, "Review info: " + review.getAuthor());
+
+                authorText.setText(review.getAuthor());
+                reviewText.setText(review.getContent());
+
+                mReviewsContainer.addView(reviewsListItemView);
+            }
         }
     }
 
